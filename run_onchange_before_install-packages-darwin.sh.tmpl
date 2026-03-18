@@ -1,0 +1,11 @@
+{{- if eq .chezmoi.os "darwin" -}}
+#!/bin/bash
+# {{ include "Brewfile" | sha256sum }}  ← this line is the magic
+# chezmoi re-runs this script whenever the Brewfile content changes
+
+set -e
+
+echo "Running brew bundle..."
+brew bundle --file="{{ .chezmoi.sourceDir }}/Brewfile"
+EOF
+{{ end -}}

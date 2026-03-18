@@ -1,0 +1,17 @@
+format = """
+[$username](#999999) [@](#999999) [$hostname](#999999) [$directory](#cccccc)
+[❯](#777777) """
+
+[username]
+show_always = true
+format = "[$user]($style)"
+style_user = "#999999"
+
+[hostname]
+ssh_only = false
+format = "[$hostname]($style)"
+style = "#999999"
+
+[directory]
+format = "[$path]($style)"
+style = "#cccccc"
