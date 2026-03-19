@@ -2,13 +2,17 @@
 export NOMAD_ADDR="{{ output "pass-cli" "item" "view" "--vault-name" "Work" "--item-title" "Nomad" "--field" "username" | trim }}"
 export NOMAD_TOKEN="{{ output "pass-cli" "item" "view" "--vault-name" "Work" "--item-title" "Nomad" "--field" "password" | trim }}"
 
+# Aliases
 alias ls='ls -l'
+alias cat='bat'
 
 # AWS CLI setup
 export AWS_PROFILE=dev
 
 path=('/Users/bthorne/.juliaup/bin' $path)
 export PATH
+
+source $(brew --prefix)/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
 
 eval "$(starship init zsh)"
 
