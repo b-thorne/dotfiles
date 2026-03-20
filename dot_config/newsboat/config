@@ -1,0 +1,28 @@
+# Refresh on startup and every hour
+refresh-on-startup yes
+auto-reload yes
+reload-time 60
+
+# Number of threads for parallel fetching
+reload-threads 4
+
+# Keep articles for 30 days
+keep-articles-days 30
+
+# Browser to open links (macOS)
+browser "open %u"
+# On Linux, swap to:
+# browser "xdg-open %u"
+
+bind-key j next
+bind-key k prev
+bind-key l open
+bind-key h quit
+
+color background          default   default
+color listnormal          color244  default
+color listfocus           color255  color238  bold
+color listnormal_unread   color255  default   bold
+color listfocus_unread    color255  color238  bold
+color info                color238  color255
+color article             color252  default# --- colors ---
