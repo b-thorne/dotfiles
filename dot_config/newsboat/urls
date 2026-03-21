@@ -1,4 +1,36 @@
+# --- technology ---
 https://feeds.arstechnica.com/arstechnica/index "tech"
 https://www.phoronix.com/rss.php "tech" "linux"
+https://hackaday.com/blog/feed/ "tech" "hardware"
+https://lobste.rs/rss "tech"
+https://hnrss.org/frontpage "tech"
+
+# --- arxiv ---
+https://arxiv.org/rss/cs.CE "arxiv" "engineering"
+https://arxiv.org/rss/cs.CG "arxiv" "geometry"
+
+# --- manufacturing ---
+https://www.manufacturingtomorrow.com/rss/ "manufacturing"
+https://www.themanufacturer.com/feed/ "manufacturing"
+https://www.mmsonline.com/rss/all "manufacturing" "machining"
+https://www.moldmakingtechnology.com/rss/all "manufacturing" "molding"
+https://www.metalformingmagazine.com/rss/all "manufacturing" "metalforming"
+
+# --- science ---
+https://www.sciencedaily.com/rss/all.xml "science"
+https://feeds.nature.com/nature/rss/current "science"
+https://www.newscientist.com/feed/home/ "science"
+https://phys.org/rss-feed/ "science"
+
+# --- ai & ml ---
+https://bair.berkeley.edu/blog/feed.xml "ai"
+https://openai.com/blog/rss.xml "ai"
+https://www.deepmind.com/blog/rss.xml "ai"
+https://lilianweng.github.io/index.xml "ai" "ml"
+https://sebastianraschka.com/rss.xml "ai" "ml"
+
+# --- blogs ---
 https://drewdevault.com/blog/index.xml "tech" "blogs"
 https://nullprogram.com/feed/ "tech" "blogs"
+https://danluu.com/atom.xml "tech" "blogs"
+https://rachelbythebay.com/w/atom.xml "tech" "blogs"
