@@ -138,6 +138,8 @@ jobs:
 
       - name: Initialize and apply from scratch
         run: |
+          # Runner images can lag current bottle metadata; a new Homebrew install cannot.
+          brew update
           test "$(uname -m)" = arm64
           bootstrap_home="$RUNNER_TEMP/bootstrap-home"
           mkdir -p "$bootstrap_home"
