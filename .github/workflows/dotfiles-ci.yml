@@ -156,13 +156,13 @@ jobs:
             --no-tty \
             verify --exclude=scripts
           brew bundle check --file="$BOOTSTRAP_HOME/.local/share/chezmoi/Brewfile"
-          test -x "$BOOTSTRAP_HOME/.opencode/bin/opencode"
           test -x "$BOOTSTRAP_HOME/.local/share/gh/extensions/gh-dash/gh-dash"
           "$BOOTSTRAP_HOME/.local/share/gh/extensions/gh-dash/gh-dash" --version
           test -d /Applications/iTerm.app
           test -d '/Applications/Visual Studio Code.app'
           HOME="$BOOTSTRAP_HOME" zsh -ic '
             command -v brew
+            command -v opencode
             command -v pi
             command -v starship
             test -r "$(brew --prefix)/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh"
