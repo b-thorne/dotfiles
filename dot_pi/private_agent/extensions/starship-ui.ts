@@ -34,10 +34,10 @@ function isEditorBorder(line: string): boolean {
 function identityLine(theme: Theme, cwd: string, branch: string | null): string {
 	const user = process.env.USER || userInfo().username;
 	const host = hostname().split(".")[0] || hostname();
-	const identity = theme.fg("thinkingXhigh", `${user} @ ${host}: ${formatCwd(cwd)}`);
-	const git = branch
-		? theme.fg("muted", " on ") + theme.fg("thinkingXhigh", ` ${branch}`)
-		: "";
+	const identity =
+		theme.fg("muted", `${user} @ ${host}: `) +
+		theme.fg("thinkingXhigh", formatCwd(cwd));
+	const git = branch ? theme.fg("muted", ` on  ${branch}`) : "";
 	return identity + git;
 }
 
