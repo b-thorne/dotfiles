@@ -1,19 +1,30 @@
-# Three-city weather widget
+# Weather, RSS, and to-do widget
 
-An Übersicht panel for current conditions and today's forecast in San Francisco,
-Portola Valley, and London.
+A tabbed Übersicht dashboard in the right-hand desktop stack.
 
-- Open-Meteo supplies current temperature, apparent temperature, WMO condition,
-daily high/low, and maximum precipitation probability without an API key.
-- All temperatures use Fahrenheit for direct comparison between cities.
-- Each row displays the forecast location's local time.
-- The widget refreshes every ten minutes and degrades per city if a request
-fails.
-- The panel is positioned in the right-hand stack between the Nomad and
-Renaissance widgets and uses the same 300-pixel content width, padding,
-typography, and visual treatment as the Nomad widget.
+## Tabs
 
-The canonical copy is managed by chezmoi at:
+- **Weather** shows current conditions, local time, apparent temperature,
+  daily high/low, and precipitation probability for San Francisco, Portola
+  Valley, and London. Open-Meteo requires no API key.
+- **RSS** aggregates the newest articles from the subscriptions in
+  `~/.config/newsboat/urls`. Feed parsing uses only Python's standard library;
+  clicking an article opens it in the default browser. A short-lived cache in
+  `~/Library/Caches/uebersicht-weather-cities/` avoids duplicate fetches during
+  manual reloads and gives the tab a stale-data fallback when feeds are offline.
+- **To-do** supports adding, completing, renaming, and deleting tasks. Task text
+  is saved atomically in
+  `~/Library/Application Support/Übersicht/weather-cities-todos.json` and is
+  deliberately not managed by chezmoi.
+
+The dashboard refreshes weather and RSS every ten minutes. The 334 × 274 px
+panel preserves the right-hand stack's outer width and leaves a gap above the
+Renaissance gallery.
+
+Übersicht's interaction shortcut must be held to click tabs, open articles,
+type tasks, or scroll a long to-do list.
+
+The canonical widget code is managed by chezmoi at:
 
 ```text
 ~/.local/share/chezmoi/Library/Application Support/Übersicht/widgets/weather-cities.widget/
