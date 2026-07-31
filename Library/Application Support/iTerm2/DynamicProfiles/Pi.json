@@ -4,6 +4,8 @@
       "Name": "Pi",
       "Guid": "5054D5B5-6D9D-49D2-A5D5-F9EA7E0BBB68",
       "Dynamic Profile Parent GUID": "C815C4AE-5A76-4CB5-AD0A-FA6A6C89084A",
+      "Normal Font": "FiraCodeNFM-Reg 12",
+      "Non Ascii Font": "FiraCodeNFM-Reg 12",
       "Cursor Guide Color": {
         "Alpha Component": 0.25,
         "Blue Component": 0.9098039215686274,
@@ -31,6 +33,8 @@
       "Name": "Shell",
       "Guid": "86B2034F-FD89-441B-A308-532EE54CBB41",
       "Dynamic Profile Parent GUID": "C815C4AE-5A76-4CB5-AD0A-FA6A6C89084A",
+      "Normal Font": "FiraCodeNFM-Reg 12",
+      "Non Ascii Font": "FiraCodeNFM-Reg 12",
       "Cursor Guide Color": {
         "Alpha Component": 0.25,
         "Blue Component": 0.8531928062438965,
