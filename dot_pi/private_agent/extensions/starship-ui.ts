@@ -9,12 +9,13 @@ import {
 } from "@earendil-works/pi-coding-agent";
 import {
 	truncateToWidth,
+	visibleWidth,
 	type EditorTheme,
 	type TUI,
 } from "@earendil-works/pi-tui";
 
 const PROMPT = "π ❯";
-const PROMPT_WIDTH = 4;
+const BASH_PROMPT = "π $ ❯";
 const ANSI_CSI = /\x1b\[[0-?]*[ -/]*[@-~]/g;
 
 function formatCwd(cwd: string): string {
@@ -54,10 +55,13 @@ class StarshipEditor extends CustomEditor {
 	}
 
 	render(width: number): string[] {
-		if (width <= PROMPT_WIDTH) return super.render(width);
+		const bashMode = this.getText().trimStart().startsWith("!");
+		const prompt = bashMode ? BASH_PROMPT : PROMPT;
+		const promptWidth = visibleWidth(prompt) + 1;
+		if (width <= promptWidth) return super.render(width);
 
 		const uiTheme = this.getUiTheme();
-		const innerWidth = width - PROMPT_WIDTH;
+		const innerWidth = width - promptWidth;
 		const rendered = super.render(innerWidth);
 		const bottomBorder = rendered.findIndex((line, index) => index > 0 && isEditorBorder(line));
 
@@ -65,8 +69,9 @@ class StarshipEditor extends CustomEditor {
 
 		const inputLines = rendered.slice(1, bottomBorder);
 		const autocompleteLines = rendered.slice(bottomBorder + 1);
-		const prefix = uiTheme.fg("syntaxKeyword", PROMPT) + " ";
-		const indent = " ".repeat(PROMPT_WIDTH);
+		const promptColor = bashMode ? "bashMode" : "syntaxKeyword";
+		const prefix = uiTheme.fg(promptColor, prompt) + " ";
+		const indent = " ".repeat(promptWidth);
 
 		return [
 			truncateToWidth(identityLine(uiTheme, this.cwd, this.getGitBranch()), width, ""),
