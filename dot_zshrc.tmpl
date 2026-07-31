@@ -19,11 +19,32 @@ path=("$HOME/.juliaup/bin" $path)
 export PATH
 
 # ----- Pi toggle -----
+# Use iTerm2's pink Pi profile only while the Pi process is in front.
+_iterm_set_profile() {
+  [[ "$TERM_PROGRAM" == "iTerm.app" ]] || return 0
+  printf '\e]1337;SetProfile=%s\a' "$1" > /dev/tty
+}
+
+# Wrap normal `pi` launches, restoring the shell profile after exit/suspend.
+pi() {
+  _iterm_set_profile Pi
+  command pi "$@"
+  local status=$?
+  _iterm_set_profile Default
+  return $status
+}
+
 # iTerm2 maps Cmd+Shift+P to one Ctrl-Z byte. Pi suspends on Ctrl-Z;
 # at the shell, the same byte resumes a stopped Pi job or launches Pi.
 _pi_toggle_widget() {
   zle -I
-  fg %pi 2>/dev/null || pi </dev/tty >/dev/tty 2>/dev/tty
+  if jobs %pi >/dev/null 2>&1; then
+    _iterm_set_profile Pi
+    fg %pi
+    _iterm_set_profile Default
+  else
+    pi </dev/tty >/dev/tty 2>/dev/tty
+  fi
   return 0
 }
 zle -N _pi_toggle_widget

@@ -1,0 +1,31 @@
+{
+  "Profiles": [
+    {
+      "Name": "Pi",
+      "Guid": "5054D5B5-6D9D-49D2-A5D5-F9EA7E0BBB68",
+      "Dynamic Profile Parent GUID": "C815C4AE-5A76-4CB5-AD0A-FA6A6C89084A",
+      "Cursor Guide Color": {
+        "Alpha Component": 0.25,
+        "Blue Component": 0.9098039215686274,
+        "Color Space": "sRGB",
+        "Green Component": 0.5137254901960784,
+        "Red Component": 0.8196078431372549
+      },
+      "Cursor Guide Color (Dark)": {
+        "Alpha Component": 0.25,
+        "Blue Component": 0.9098039215686274,
+        "Color Space": "sRGB",
+        "Green Component": 0.5137254901960784,
+        "Red Component": 0.8196078431372549
+      },
+      "Cursor Guide Color (Light)": {
+        "Alpha Component": 0.25,
+        "Blue Component": 0.9098039215686274,
+        "Color Space": "sRGB",
+        "Green Component": 0.5137254901960784,
+        "Red Component": 0.8196078431372549
+      },
+      "Use Cursor Guide (Dark)": true
+    }
+  ]
+}
