@@ -160,8 +160,11 @@ jobs:
           "$BOOTSTRAP_HOME/.local/share/gh/extensions/gh-dash/gh-dash" --version
           test -d /Applications/iTerm.app
           test -d '/Applications/Visual Studio Code.app'
+          HOME="$BOOTSTRAP_HOME" code --list-extensions \
+            | grep -Fx 'arcticicestudio.nord-visual-studio-code'
           HOME="$BOOTSTRAP_HOME" zsh -ic '
             command -v brew
+            command -v code
             command -v opencode
             command -v pi
             command -v starship
