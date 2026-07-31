@@ -31,10 +31,14 @@ function isEditorBorder(line: string): boolean {
 	return /^─+$/.test(plain) || /^─── [↑↓] \d+ more ─*$/.test(plain);
 }
 
-function identityLine(theme: Theme, cwd: string): string {
+function identityLine(theme: Theme, cwd: string, branch: string | null): string {
 	const user = process.env.USER || userInfo().username;
 	const host = hostname().split(".")[0] || hostname();
-	return theme.fg("thinkingXhigh", `${user} @ ${host} ${formatCwd(cwd)}`);
+	const identity = theme.fg("thinkingXhigh", `${user} @ ${host}: ${formatCwd(cwd)}`);
+	const git = branch
+		? theme.fg("muted", " on ") + theme.fg("thinkingXhigh", ` ${branch}`)
+		: "";
+	return identity + git;
 }
 
 class StarshipEditor extends CustomEditor {
@@ -44,6 +48,7 @@ class StarshipEditor extends CustomEditor {
 		keybindings: KeybindingsManager,
 		private readonly getUiTheme: () => Theme,
 		private readonly cwd: string,
+		private readonly getGitBranch: () => string | null,
 	) {
 		super(tui, editorTheme, keybindings);
 	}
@@ -64,16 +69,20 @@ class StarshipEditor extends CustomEditor {
 		const indent = " ".repeat(PROMPT_WIDTH);
 
 		return [
-			truncateToWidth(identityLine(uiTheme, this.cwd), width, ""),
+			truncateToWidth(identityLine(uiTheme, this.cwd, this.getGitBranch()), width, ""),
 			...inputLines.map((line, index) => (index === 0 ? prefix : indent) + line),
 			...autocompleteLines.map((line) => indent + line),
 		];
 	}
 }
 
-function applyFooter(ctx: ExtensionContext): void {
+function applyFooter(ctx: ExtensionContext, branchState: { current: string | null }): void {
 	ctx.ui.setFooter((tui, theme, footerData) => {
-		const unsubscribe = footerData.onBranchChange(() => tui.requestRender());
+		branchState.current = footerData.getGitBranch();
+		const unsubscribe = footerData.onBranchChange(() => {
+			branchState.current = footerData.getGitBranch();
+			tui.requestRender();
+		});
 		return {
 			dispose: unsubscribe,
 			invalidate() {},
@@ -96,10 +105,18 @@ function applyFooter(ctx: ExtensionContext): void {
 export default function starshipUi(pi: ExtensionAPI) {
 	pi.on("session_start", (_event, ctx) => {
 		if (ctx.mode !== "tui") return;
+		const branchState = { current: null as string | null };
 		ctx.ui.setTitle("pi");
+		applyFooter(ctx, branchState);
 		ctx.ui.setEditorComponent((tui, theme, keybindings) =>
-			new StarshipEditor(tui, theme, keybindings, () => ctx.ui.theme, ctx.cwd),
+			new StarshipEditor(
+				tui,
+				theme,
+				keybindings,
+				() => ctx.ui.theme,
+				ctx.cwd,
+				() => branchState.current,
+			),
 		);
-		applyFooter(ctx);
 	});
 }

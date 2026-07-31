@@ -1,5 +1,5 @@
 format = """
-[$username](#999999) [@](#999999) [$hostname](#999999) [$directory](#cccccc)
+[$username](#999999) [@](#999999) [$hostname](#999999)[:](#999999) [$directory](#cccccc) $git_branch
 [❯](#777777) """
 
 [username]
@@ -15,3 +15,7 @@ style = "#999999"
 [directory]
 format = "[$path]($style)"
 style = "#cccccc"
+
+[git_branch]
+symbol = " "
+format = "on [$symbol$branch(:$remote_branch)]($style) "
