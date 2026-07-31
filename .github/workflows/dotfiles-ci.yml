@@ -1,0 +1,167 @@
+name: Dotfiles CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+  schedule:
+    # Catch breakage caused by new macOS images and Homebrew updates.
+    - cron: "17 9 * * 1"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  validate:
+    name: Render and validate
+    runs-on: macos-latest
+    timeout-minutes: 15
+    env:
+      HOMEBREW_NO_ANALYTICS: 1
+      HOMEBREW_NO_AUTO_UPDATE: 1
+      HOMEBREW_NO_ENV_HINTS: 1
+    steps:
+      - name: Check out dotfiles
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Install chezmoi
+        run: brew install chezmoi
+
+      - name: Render into a clean home directory
+        run: |
+          destination="$RUNNER_TEMP/chezmoi-home"
+          mkdir -p "$destination"
+          export HOME="$destination"
+
+          chezmoi \
+            --source="$GITHUB_WORKSPACE" \
+            --destination="$destination" \
+            --no-tty \
+            apply --dry-run >/dev/null
+
+          chezmoi \
+            --source="$GITHUB_WORKSPACE" \
+            --destination="$destination" \
+            --no-tty \
+            apply --exclude=scripts
+
+          chezmoi \
+            --source="$GITHUB_WORKSPACE" \
+            --destination="$destination" \
+            --no-tty \
+            verify --exclude=scripts
+
+          echo "CHEZMOI_DESTINATION=$destination" >> "$GITHUB_ENV"
+
+      - name: Validate rendered files and scripts
+        run: |
+          set -eu
+
+          # Parse every Brewfile declaration without installing the bundle.
+          brew bundle list --file="$GITHUB_WORKSPACE/Brewfile" --all >/dev/null
+
+          export HOME="$CHEZMOI_DESTINATION"
+          zsh -n "$CHEZMOI_DESTINATION/.zshrc"
+          if grep -R -F '/Users/bthorne' \
+            "$CHEZMOI_DESTINATION/.zshrc" \
+            "$CHEZMOI_DESTINATION/.config" \
+            "$CHEZMOI_DESTINATION/.pi"; then
+            echo 'Rendered files contain a machine-specific home path' >&2
+            exit 1
+          fi
+          grep -F "$CHEZMOI_DESTINATION/.config/iterm2" \
+            "$CHEZMOI_DESTINATION/.config/iterm2/com.googlecode.iterm2.plist" >/dev/null
+
+          while IFS= read -r -d '' file; do
+            python3 -m json.tool "$file" >/dev/null
+          done < <(find "$CHEZMOI_DESTINATION" -type f -name '*.json' -print0)
+
+          while IFS= read -r -d '' file; do
+            python3 -c 'import pathlib, sys, tomllib; tomllib.loads(pathlib.Path(sys.argv[1]).read_text())' "$file"
+          done < <(find "$CHEZMOI_DESTINATION" -type f -name '*.toml' -print0)
+
+          while IFS= read -r -d '' file; do
+            plutil -lint "$file"
+          done < <(find "$CHEZMOI_DESTINATION" -type f \( -name '*.plist' -o -name '*.itermcolors' \) -print0)
+
+          while IFS= read -r -d '' file; do
+            node --experimental-strip-types --check "$file"
+          done < <(find "$CHEZMOI_DESTINATION" -type f -name '*.ts' -print0)
+
+          while IFS= read -r target; do
+            rendered=$(mktemp)
+            chezmoi \
+              --source="$GITHUB_WORKSPACE" \
+              --destination="$CHEZMOI_DESTINATION" \
+              cat "$target" > "$rendered"
+            case "$(head -n 1 "$rendered")" in
+              *bash*) bash -n "$rendered" ;;
+              *sh*) sh -n "$rendered" ;;
+              *) echo "Unsupported script interpreter: $target" >&2; exit 1 ;;
+            esac
+            rm -f "$rendered"
+          done < <(
+            chezmoi \
+              --source="$GITHUB_WORKSPACE" \
+              --destination="$CHEZMOI_DESTINATION" \
+              managed --include=scripts --path-style=absolute
+          )
+
+  bootstrap:
+    name: Bootstrap a fresh Mac
+    runs-on: macos-latest
+    timeout-minutes: 120
+    env:
+      HOMEBREW_BUNDLE_NO_UPGRADE: 1
+      HOMEBREW_NO_ANALYTICS: 1
+      HOMEBREW_NO_AUTO_UPDATE: 1
+      HOMEBREW_NO_ENV_HINTS: 1
+    steps:
+      - name: Check out dotfiles
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Install the bootstrap binary
+        run: |
+          installer="$RUNNER_TEMP/install-chezmoi.sh"
+          curl -fsSL https://get.chezmoi.io -o "$installer"
+          sh "$installer" -b "$RUNNER_TEMP/bin"
+          "$RUNNER_TEMP/bin/chezmoi" --version
+
+      - name: Initialize and apply from scratch
+        run: |
+          test "$(uname -m)" = arm64
+          bootstrap_home="$RUNNER_TEMP/bootstrap-home"
+          mkdir -p "$bootstrap_home"
+          HOME="$bootstrap_home" \
+            "$RUNNER_TEMP/bin/chezmoi" \
+            --no-tty \
+            init --apply "file://$GITHUB_WORKSPACE"
+          echo "BOOTSTRAP_HOME=$bootstrap_home" >> "$GITHUB_ENV"
+
+      - name: Verify the installed state
+        run: |
+          HOME="$BOOTSTRAP_HOME" \
+            "$RUNNER_TEMP/bin/chezmoi" \
+            --no-tty \
+            verify --exclude=scripts
+          brew bundle check --file="$BOOTSTRAP_HOME/.local/share/chezmoi/Brewfile"
+          test -x "$BOOTSTRAP_HOME/.opencode/bin/opencode"
+          test -x "$BOOTSTRAP_HOME/.local/share/gh/extensions/gh-dash/gh-dash"
+          "$BOOTSTRAP_HOME/.local/share/gh/extensions/gh-dash/gh-dash" --version
+          test -d /Applications/iTerm.app
+          test -d '/Applications/Visual Studio Code.app'
+          HOME="$BOOTSTRAP_HOME" zsh -ic '
+            command -v brew
+            command -v pi
+            command -v starship
+            test -r "$(brew --prefix)/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh"
+          '

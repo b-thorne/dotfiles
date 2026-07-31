@@ -5,6 +5,20 @@
 
 set -e
 
+brew_bin=$(command -v brew 2>/dev/null || true)
+if [ -z "$brew_bin" ]; then
+  for candidate in /opt/homebrew/bin/brew /usr/local/bin/brew; do
+    if [ -x "$candidate" ]; then
+      brew_bin=$candidate
+      break
+    fi
+  done
+fi
+if [ -z "$brew_bin" ]; then
+  echo "Homebrew is not installed" >&2
+  exit 1
+fi
+
 echo "Running brew bundle..."
-brew bundle --file="{{ .chezmoi.sourceDir }}/Brewfile"
+"$brew_bin" bundle --file="{{ .chezmoi.sourceDir }}/Brewfile"
 {{ end -}}

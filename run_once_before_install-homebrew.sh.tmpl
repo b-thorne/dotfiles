@@ -1,0 +1,15 @@
+{{- if eq .chezmoi.os "darwin" -}}
+#!/bin/bash
+set -euo pipefail
+
+if command -v brew >/dev/null 2>&1 ||
+   [ -x /opt/homebrew/bin/brew ] ||
+   [ -x /usr/local/bin/brew ]; then
+  exit 0
+fi
+
+installer=$(mktemp)
+trap 'rm -f "$installer"' EXIT HUP INT TERM
+curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh -o "$installer"
+/bin/bash "$installer"
+{{ end -}}
