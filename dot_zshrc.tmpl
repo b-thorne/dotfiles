@@ -12,6 +12,17 @@ export AWS_PROFILE=dev
 path=('/Users/bthorne/.juliaup/bin' $path)
 export PATH
 
+# ----- Pi toggle -----
+# iTerm2 maps Cmd+Shift+P to one Ctrl-Z byte. Pi suspends on Ctrl-Z;
+# at the shell, the same byte resumes a stopped Pi job or launches Pi.
+_pi_toggle_widget() {
+  zle -I
+  fg %pi 2>/dev/null || pi </dev/tty >/dev/tty 2>/dev/tty
+  return 0
+}
+zle -N _pi_toggle_widget
+bindkey '^Z' _pi_toggle_widget
+
 source $(brew --prefix)/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
 
 eval "$(starship init zsh)"
