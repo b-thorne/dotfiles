@@ -65,7 +65,7 @@ class StarshipEditor extends CustomEditor {
 
 		const inputLines = rendered.slice(1, bottomBorder);
 		const autocompleteLines = rendered.slice(bottomBorder + 1);
-		const prefix = uiTheme.fg("thinkingXhigh", PROMPT) + " ";
+		const prefix = uiTheme.fg("syntaxKeyword", PROMPT) + " ";
 		const indent = " ".repeat(PROMPT_WIDTH);
 
 		return [
