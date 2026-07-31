@@ -1,10 +1,11 @@
 {
-  "lastChangelogVersion": "0.81.1",
+  "lastChangelogVersion": "0.83.0",
   "theme": "starship",
   "defaultProvider": "openai-codex",
   "defaultModel": "gpt-5.6-sol",
   "defaultThinkingLevel": "xhigh",
   "defaultProjectTrust": "always",
+  "showHardwareCursor": true,
   "packages": [
     "npm:pi-web-access",
     "npm:pi-subagents",
