@@ -1,0 +1,83 @@
+{
+  "$schema": "https://raw.githubusercontent.com/earendil-works/pi/main/packages/coding-agent/src/modes/interactive/theme/theme-schema.json",
+  "name": "starship",
+  "vars": {
+    "text": "#cccccc",
+    "muted": "#999999",
+    "dim": "#777777",
+    "border": "#444444",
+    "panel": "#1d1d1d",
+    "panelRaised": "#252525",
+    "green": "#8fae8b",
+    "red": "#c47f7f",
+    "yellow": "#c0a878",
+    "blue": "#8da3b8",
+    "purple": "#a391b5",
+    "piPink": "#d183e8"
+  },
+  "colors": {
+    "accent": "text",
+    "border": "border",
+    "borderAccent": "dim",
+    "borderMuted": "border",
+    "success": "green",
+    "error": "red",
+    "warning": "yellow",
+    "muted": "muted",
+    "dim": "dim",
+    "text": "text",
+    "thinkingText": "muted",
+
+    "selectedBg": "panelRaised",
+    "userMessageBg": "panel",
+    "userMessageText": "text",
+    "customMessageBg": "panel",
+    "customMessageText": "text",
+    "customMessageLabel": "muted",
+    "toolPendingBg": "panel",
+    "toolSuccessBg": "#1d241d",
+    "toolErrorBg": "#281d1d",
+    "toolTitle": "text",
+    "toolOutput": "muted",
+
+    "mdHeading": "text",
+    "mdLink": "blue",
+    "mdLinkUrl": "dim",
+    "mdCode": "#b8a0a8",
+    "mdCodeBlock": "text",
+    "mdCodeBlockBorder": "border",
+    "mdQuote": "muted",
+    "mdQuoteBorder": "border",
+    "mdHr": "border",
+    "mdListBullet": "muted",
+
+    "toolDiffAdded": "green",
+    "toolDiffRemoved": "red",
+    "toolDiffContext": "muted",
+
+    "syntaxComment": "dim",
+    "syntaxKeyword": "purple",
+    "syntaxFunction": "blue",
+    "syntaxVariable": "text",
+    "syntaxString": "green",
+    "syntaxNumber": "yellow",
+    "syntaxType": "#8fafaf",
+    "syntaxOperator": "muted",
+    "syntaxPunctuation": "text",
+
+    "thinkingOff": "border",
+    "thinkingMinimal": "#555555",
+    "thinkingLow": "#666666",
+    "thinkingMedium": "dim",
+    "thinkingHigh": "muted",
+    "thinkingXhigh": "piPink",
+    "thinkingMax": "#eeeeee",
+
+    "bashMode": "yellow"
+  },
+  "export": {
+    "pageBg": "#151515",
+    "cardBg": "panel",
+    "infoBg": "panelRaised"
+  }
+}

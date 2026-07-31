@@ -1,0 +1,8 @@
+{{- if eq .chezmoi.os "darwin" -}}
+#!/bin/sh
+set -eu
+
+prefs_dir="$HOME/.config/iterm2"
+defaults write com.googlecode.iterm2 PrefsCustomFolder -string "$prefs_dir"
+defaults write com.googlecode.iterm2 LoadPrefsFromCustomFolder -bool true
+{{- end -}}

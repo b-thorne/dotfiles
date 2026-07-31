@@ -1,0 +1,3 @@
+{
+  "app.suspend": ["ctrl+z", "f12"]
+}
