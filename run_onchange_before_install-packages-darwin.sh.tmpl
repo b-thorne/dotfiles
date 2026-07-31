@@ -19,6 +19,13 @@ if [ -z "$brew_bin" ]; then
   exit 1
 fi
 
+# Homebrew 6 requires explicit trust before loading third-party code.
+if "$brew_bin" trust --help >/dev/null 2>&1; then
+  "$brew_bin" trust --formula hashicorp/tap/nomad
+  "$brew_bin" trust --formula federico-terzi/espanso/espanso
+  "$brew_bin" trust --cask epk/epk/font-sf-mono-nerd-font
+fi
+
 echo "Running brew bundle..."
 "$brew_bin" bundle --file="{{ .chezmoi.sourceDir }}/Brewfile"
 {{ end -}}
