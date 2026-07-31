@@ -1,0 +1,169 @@
+#:schema https://yazi-rs.github.io/schemas/theme.json
+
+# Matches the desktop's charcoal panels, cool typography, and restrained accents.
+
+[app]
+overall = { bg = "#0d0f13" }
+
+[mgr]
+cwd            = { fg = "#8fb4d9", bold = true }
+find_keyword   = { fg = "#e2b04a", bold = true, underline = true }
+find_position  = { fg = "#77818c", italic = true }
+symlink_target = { fg = "#65707b", italic = true }
+
+marker_copied   = { fg = "#7fbf9e", bg = "#7fbf9e" }
+marker_cut      = { fg = "#d98282", bg = "#d98282" }
+marker_marked   = { fg = "#b492c4", bg = "#b492c4" }
+marker_selected = { fg = "#8fb4d9", bg = "#8fb4d9" }
+marker_symbol   = "│"
+
+count_copied   = { fg = "#0d0f13", bg = "#7fbf9e", bold = true }
+count_cut      = { fg = "#0d0f13", bg = "#d98282", bold = true }
+count_selected = { fg = "#0d0f13", bg = "#8fb4d9", bold = true }
+
+border_symbol = "│"
+border_style  = { fg = "#353d46" }
+
+[tabs]
+active   = { fg = "#e8edf2", bg = "#26303a", bold = true }
+inactive = { fg = "#65707b", bg = "#111418" }
+sep_inner = { open = "", close = "│" }
+sep_outer = { open = "", close = "" }
+
+[mode]
+normal_main = { fg = "#0d0f13", bg = "#8fb4d9", bold = true }
+normal_alt  = { fg = "#8fb4d9", bg = "#20262d" }
+select_main = { fg = "#0d0f13", bg = "#7fbf9e", bold = true }
+select_alt  = { fg = "#7fbf9e", bg = "#20262d" }
+unset_main  = { fg = "#0d0f13", bg = "#d98282", bold = true }
+unset_alt   = { fg = "#d98282", bg = "#20262d" }
+
+[indicator]
+parent  = { fg = "#65707b", bg = "#20262d" }
+current = { fg = "#e8edf2", bg = "#26303a", bold = true }
+preview = { fg = "#8fb4d9", underline = true }
+padding = { open = "", close = "" }
+
+[status]
+overall   = { fg = "#65707b" }
+sep_left  = { open = "", close = "│" }
+sep_right = { open = "│", close = "" }
+
+perm_type  = { fg = "#8fb4d9" }
+perm_read  = { fg = "#9fa9b3" }
+perm_write = { fg = "#e2b04a" }
+perm_exec  = { fg = "#7fbf9e" }
+perm_sep   = { fg = "#454f59" }
+
+progress_label  = { fg = "#e8edf2", bold = true }
+progress_normal = { fg = "#7fbf9e", bg = "#26303a" }
+progress_error  = { fg = "#e2b04a", bg = "#5b3336" }
+
+[which]
+cols            = 3
+mask            = { bg = "#111418" }
+cand            = { fg = "#8fb4d9", bold = true }
+rest            = { fg = "#59636e" }
+desc            = { fg = "#b9c1c9" }
+separator       = "  ·  "
+separator_style = { fg = "#454f59" }
+
+[confirm]
+border     = { fg = "#59636e" }
+title      = { fg = "#8fb4d9", bold = true }
+body       = { fg = "#cfd6dd" }
+list       = { fg = "#77818c" }
+btn_yes    = { fg = "#0d0f13", bg = "#7fbf9e", bold = true }
+btn_no     = { fg = "#9fa9b3", bg = "#20262d" }
+btn_labels = [ "  yes  ", "  no  " ]
+
+[spot]
+border   = { fg = "#59636e" }
+title    = { fg = "#8fb4d9", bold = true }
+tbl_col  = { fg = "#9fa9b3", bold = true }
+tbl_cell = { fg = "#e8edf2", bg = "#26303a" }
+
+[notify]
+title_info  = { fg = "#8fb4d9" }
+title_warn  = { fg = "#e2b04a" }
+title_error = { fg = "#d98282" }
+icon_info   = "●"
+icon_warn   = "▲"
+icon_error  = "×"
+
+[pick]
+border   = { fg = "#59636e" }
+active   = { fg = "#e8edf2", bg = "#26303a", bold = true }
+inactive = { fg = "#77818c" }
+
+[input]
+border   = { fg = "#59636e" }
+title    = { fg = "#8fb4d9", bold = true }
+value    = { fg = "#cfd6dd" }
+selected = { fg = "#0d0f13", bg = "#8fb4d9" }
+
+[cmp]
+border       = { fg = "#59636e" }
+active       = { fg = "#e8edf2", bg = "#26303a", bold = true }
+inactive     = { fg = "#77818c" }
+icon_file    = ""
+icon_folder  = ""
+icon_command = ""
+
+[tasks]
+border  = { fg = "#59636e" }
+title   = { fg = "#8fb4d9", bold = true }
+hovered = { fg = "#e8edf2", bg = "#26303a", bold = true }
+
+[help]
+border  = { fg = "#59636e" }
+chord   = { fg = "#8fb4d9", bold = true }
+action  = { fg = "#b9c1c9" }
+hovered = { fg = "#e8edf2", bg = "#26303a", bold = true }
+
+[filetype]
+rules = [
+  { mime = "image/*", fg = "#c2a56f" },
+  { mime = "{audio,video}/*", fg = "#b492c4" },
+  { mime = "application/{zip,rar,7z*,tar,gzip,xz,zstd,bzip*,lzma,compress,archive,cpio,arj,xar,ms-cab*}", fg = "#b97973" },
+  { mime = "application/{pdf,doc,rtf}", fg = "#8fb4d9" },
+  { mime = "vfs/{absent,stale}", fg = "#454f59" },
+  { url = "*", is = "orphan", fg = "#d98282" },
+  { url = "*", is = "exec", fg = "#7fbf9e" },
+  { url = "*", is = "dummy", fg = "#d98282" },
+  { url = "*/", is = "dummy", fg = "#d98282" },
+  { url = "*/", fg = "#8fb4d9" },
+]
+
+# Keep useful glyphs, but replace the stock rainbow with a compact set of
+# semantic colors shared by the desktop widgets.
+[icon]
+globs = [
+  { url = "**/*.{step,stp,ste,stl,obj,3mf,brep,x_t,x_b,xmt_txt,xmt_bin}", text = "󰆧", fg = "#7fbf9e" },
+  { url = "**/*.{png,jpg,jpeg,gif,webp,svg,avif,heic}", text = "", fg = "#c2a56f" },
+  { url = "**/*.{mp3,m4a,flac,wav,ogg,mp4,mov,mkv,webm}", text = "", fg = "#b492c4" },
+  { url = "**/*.{zip,tar,gz,tgz,bz2,xz,7z,rar}", text = "", fg = "#b97973" },
+  { url = "**/*.{pdf,doc,docx,rtf}", text = "󰈙", fg = "#8fb4d9" },
+]
+dirs = [
+  { name = ".config", text = "", fg = "#8fb4d9" },
+  { name = ".git", text = "", fg = "#8fb4d9" },
+  { name = ".github", text = "", fg = "#8fb4d9" },
+  { name = "Desktop", text = "", fg = "#8fb4d9" },
+  { name = "Documents", text = "", fg = "#8fb4d9" },
+  { name = "Downloads", text = "", fg = "#8fb4d9" },
+  { name = "Library", text = "", fg = "#8fb4d9" },
+  { name = "Movies", text = "", fg = "#8fb4d9" },
+  { name = "Music", text = "", fg = "#8fb4d9" },
+  { name = "Pictures", text = "", fg = "#8fb4d9" },
+]
+files = []
+exts = []
+conds = [
+  { if = "orphan", text = "", fg = "#d98282" },
+  { if = "link", text = "", fg = "#77818c" },
+  { if = "dummy", text = "×", fg = "#d98282" },
+  { if = "dir", text = "", fg = "#8fb4d9" },
+  { if = "exec", text = "", fg = "#7fbf9e" },
+  { if = "!dir", text = "", fg = "#77818c" },
+]
