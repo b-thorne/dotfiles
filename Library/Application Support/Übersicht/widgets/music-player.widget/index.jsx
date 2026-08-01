@@ -619,8 +619,8 @@ export const className = `
     width: 18px;
     height: 18px;
     margin-bottom: 5px;
-    border: 2px solid rgba(143, 180, 217, 0.2);
-    border-top-color: #8fb4d9;
+    border: 2px solid rgba(133, 197, 218, 0.2);
+    border-top-color: #85c5da;
     border-radius: 50%;
     animation: spin 0.9s linear infinite;
   }
@@ -655,7 +655,7 @@ export const className = `
   }
   .tabs button.active {
     color: #dce3e9;
-    background: rgba(143, 180, 217, 0.13);
+    background: rgba(133, 197, 218, 0.13);
   }
 
   .searchbox {
@@ -693,11 +693,11 @@ export const className = `
     min-height: 0;
     overflow-y: auto;
     scrollbar-width: thin;
-    scrollbar-color: rgba(143, 180, 217, 0.25) transparent;
+    scrollbar-color: rgba(133, 197, 218, 0.25) transparent;
   }
   .browser::-webkit-scrollbar { width: 5px; }
   .browser::-webkit-scrollbar-thumb {
-    background: rgba(143, 180, 217, 0.22);
+    background: rgba(133, 197, 218, 0.22);
     border-radius: 3px;
   }
 
@@ -717,7 +717,7 @@ export const className = `
   }
   .crumbs button {
     padding: 0;
-    color: #8fb4d9;
+    color: #85c5da;
     background: transparent;
     border: 0;
   }
@@ -736,7 +736,7 @@ export const className = `
     border-bottom: 1px solid rgba(255, 255, 255, 0.05);
   }
   .navrow { grid-template-columns: minmax(0, 1fr) auto 14px; align-items: center; gap: 9px; }
-  .navrow:hover, .trackrow:hover { background: rgba(143, 180, 217, 0.075); }
+  .navrow:hover, .trackrow:hover { background: rgba(133, 197, 218, 0.075); }
   .primary {
     overflow: hidden;
     color: #d5dce2;
@@ -836,7 +836,7 @@ export const className = `
     width: 33px;
     height: 33px;
     color: #e4e9ed;
-    background: rgba(143, 180, 217, 0.2);
+    background: rgba(133, 197, 218, 0.2);
     font-size: 12px;
   }
   .transport button:disabled { opacity: 0.28; }
@@ -863,7 +863,7 @@ export const className = `
     width: 8px;
     height: 8px;
     appearance: none;
-    background: #8fb4d9;
+    background: #85c5da;
     border: 0;
     border-radius: 50%;
   }

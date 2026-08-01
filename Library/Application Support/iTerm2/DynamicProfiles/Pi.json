@@ -6,6 +6,21 @@
       "Dynamic Profile Parent GUID": "C815C4AE-5A76-4CB5-AD0A-FA6A6C89084A",
       "Normal Font": "SFMonoNerdFontComplete-Regular 12",
       "Non Ascii Font": "SFMonoNerdFontComplete-Regular 12",
+      "Cursor Color": {
+        "Alpha Component": 1.0,
+        "Blue Component": 0.9098039215686274,
+        "Color Space": "sRGB",
+        "Green Component": 0.5137254901960784,
+        "Red Component": 0.8196078431372549
+      },
+      "Cursor Text Color": {
+        "Alpha Component": 1.0,
+        "Blue Component": 0.07450980392156863,
+        "Color Space": "sRGB",
+        "Green Component": 0.058823529411764705,
+        "Red Component": 0.050980392156862744
+      },
+      "Smart Cursor Color (Dark)": false,
       "Cursor Guide Color": {
         "Alpha Component": 0.25,
         "Blue Component": 0.9098039215686274,
@@ -35,26 +50,41 @@
       "Dynamic Profile Parent GUID": "C815C4AE-5A76-4CB5-AD0A-FA6A6C89084A",
       "Normal Font": "SFMonoNerdFontComplete-Regular 12",
       "Non Ascii Font": "SFMonoNerdFontComplete-Regular 12",
+      "Cursor Color": {
+        "Alpha Component": 1.0,
+        "Blue Component": 0.8549019607843137,
+        "Color Space": "sRGB",
+        "Green Component": 0.7725490196078432,
+        "Red Component": 0.5215686274509804
+      },
+      "Cursor Text Color": {
+        "Alpha Component": 1.0,
+        "Blue Component": 0.07450980392156863,
+        "Color Space": "sRGB",
+        "Green Component": 0.058823529411764705,
+        "Red Component": 0.050980392156862744
+      },
+      "Smart Cursor Color (Dark)": false,
       "Cursor Guide Color": {
         "Alpha Component": 0.25,
-        "Blue Component": 0.6862745098039216,
+        "Blue Component": 0.8549019607843137,
         "Color Space": "sRGB",
-        "Green Component": 0.6862745098039216,
-        "Red Component": 0.5607843137254902
+        "Green Component": 0.7725490196078432,
+        "Red Component": 0.5215686274509804
       },
       "Cursor Guide Color (Dark)": {
         "Alpha Component": 0.25,
-        "Blue Component": 0.6862745098039216,
+        "Blue Component": 0.8549019607843137,
         "Color Space": "sRGB",
-        "Green Component": 0.6862745098039216,
-        "Red Component": 0.5607843137254902
+        "Green Component": 0.7725490196078432,
+        "Red Component": 0.5215686274509804
       },
       "Cursor Guide Color (Light)": {
         "Alpha Component": 0.25,
-        "Blue Component": 0.6862745098039216,
+        "Blue Component": 0.8549019607843137,
         "Color Space": "sRGB",
-        "Green Component": 0.6862745098039216,
-        "Red Component": 0.5607843137254902
+        "Green Component": 0.7725490196078432,
+        "Red Component": 0.5215686274509804
       },
       "Use Cursor Guide (Dark)": true
     }

@@ -1,21 +1,36 @@
+palette = "widget_glass"
+
 format = """
-[$username](#999999) [@](#999999) [$hostname](#999999)[:](#999999) [$directory](#cccccc) $git_branch
-[❯](#777777) """
+[$username](muted) [@](dim) [$hostname](muted)[:](dim) [$directory](cyan) $git_branch
+[❯](pink) """
 
 [username]
 show_always = true
 format = "[$user]($style)"
-style_user = "#999999"
+style_user = "muted"
 
 [hostname]
 ssh_only = false
 format = "[$hostname]($style)"
-style = "#999999"
+style = "muted"
 
 [directory]
 format = "[$path]($style)"
-style = "#cccccc"
+style = "cyan"
 
 [git_branch]
 symbol = " "
 format = "on [$symbol$branch(:$remote_branch)]($style) "
+style = "pink"
+
+[palettes.widget_glass]
+background = "#0d0f13"
+foreground = "#dde3e9"
+muted = "#7b8590"
+dim = "#59636e"
+cyan = "#85c5da"
+pink = "#d183e8"
+red = "#d78383"
+green = "#7fbf9e"
+yellow = "#e2b04a"
+blue = "#8fb4d9"

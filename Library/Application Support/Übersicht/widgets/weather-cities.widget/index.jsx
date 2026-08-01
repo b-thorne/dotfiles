@@ -497,7 +497,7 @@ export const className = `
     bottom: -1px;
     left: 0;
     height: 1px;
-    background: #8fb4d9;
+    background: #85c5da;
     content: "";
   }
 
@@ -519,7 +519,7 @@ export const className = `
   }
   .dot.ok { background: #7fbf9e; }
   .dot.warn { background: #e2b04a; }
-  .dot.busy { background: #8fb4d9; animation: pulse 900ms infinite alternate; }
+  .dot.busy { background: #85c5da; animation: pulse 900ms infinite alternate; }
 
   .tabbody {
     flex: 1 1 auto;
@@ -549,7 +549,7 @@ export const className = `
   .weatherline { display: flex; align-items: center; min-height: 29px; }
   .conditionicon {
     width: 26px;
-    color: #8fb4d9;
+    color: #85c5da;
     font-family: -apple-system, BlinkMacSystemFont, sans-serif;
     font-size: 18px;
     line-height: 1;
@@ -610,7 +610,7 @@ export const className = `
   }
   .article:last-child { border-bottom: 0; }
   .article:hover strong { color: #ffffff; }
-  .article:hover .openmark { color: #8fb4d9; transform: translate(1px, -1px); }
+  .article:hover .openmark { color: #85c5da; transform: translate(1px, -1px); }
 
   .articlecopy {
     display: block;
@@ -677,14 +677,14 @@ export const className = `
     font-size: 9px;
   }
   input::placeholder { color: #59636e; }
-  input:focus { border-color: rgba(143, 180, 217, 0.55); }
+  input:focus { border-color: rgba(133, 197, 218, 0.55); }
   .addtodo button {
     width: 27px;
     padding: 0;
-    background: rgba(143, 180, 217, 0.12);
-    border: 1px solid rgba(143, 180, 217, 0.26);
+    background: rgba(133, 197, 218, 0.12);
+    border: 1px solid rgba(133, 197, 218, 0.26);
     border-radius: 4px;
-    color: #9fc1df;
+    color: #9ed5e6;
     cursor: pointer;
     font-size: 14px;
   }
@@ -815,8 +815,8 @@ export const className = `
   .spinner {
     width: 14px;
     height: 14px;
-    border: 1px solid rgba(143, 180, 217, 0.28);
-    border-top-color: #8fb4d9;
+    border: 1px solid rgba(133, 197, 218, 0.28);
+    border-top-color: #85c5da;
     border-radius: 50%;
     animation: spin 800ms linear infinite;
   }
