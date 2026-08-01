@@ -37,24 +37,24 @@
       "Non Ascii Font": "SFMonoNerdFontComplete-Regular 12",
       "Cursor Guide Color": {
         "Alpha Component": 0.25,
-        "Blue Component": 0.8531928062438965,
+        "Blue Component": 0.6862745098039216,
         "Color Space": "sRGB",
-        "Green Component": 0.7721771597862244,
-        "Red Component": 0.5233826041221619
+        "Green Component": 0.6862745098039216,
+        "Red Component": 0.5607843137254902
       },
       "Cursor Guide Color (Dark)": {
         "Alpha Component": 0.25,
-        "Blue Component": 1.0,
+        "Blue Component": 0.6862745098039216,
         "Color Space": "sRGB",
-        "Green Component": 0.9268307089805603,
-        "Red Component": 0.7021318674087524
+        "Green Component": 0.6862745098039216,
+        "Red Component": 0.5607843137254902
       },
       "Cursor Guide Color (Light)": {
         "Alpha Component": 0.25,
-        "Blue Component": 1.0,
+        "Blue Component": 0.6862745098039216,
         "Color Space": "sRGB",
-        "Green Component": 0.9268307089805603,
-        "Red Component": 0.7021318674087524
+        "Green Component": 0.6862745098039216,
+        "Red Component": 0.5607843137254902
       },
       "Use Cursor Guide (Dark)": true
     }
