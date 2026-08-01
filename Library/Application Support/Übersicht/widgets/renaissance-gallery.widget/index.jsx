@@ -246,7 +246,7 @@ export const className = `
   .card {
     width: 334px;
     overflow: hidden;
-    background: rgba(18, 17, 15, 0.82);
+    background: rgba(13, 15, 19, 0.78);
     border: 1px solid rgba(255, 255, 255, 0.13);
     border-radius: 20px;
     box-shadow:
@@ -260,7 +260,7 @@ export const className = `
     width: 100%;
     height: 228px;
     overflow: hidden;
-    background: #15130f;
+    background: #0d0f13;
   }
 
   .wash {
@@ -320,7 +320,7 @@ export const className = `
     border-top: 1px solid rgba(255, 255, 255, 0.1);
     background:
       linear-gradient(135deg, rgba(255, 252, 242, 0.055), transparent 55%),
-      rgba(15, 14, 12, 0.72);
+      rgba(13, 15, 19, 0.72);
   }
 
   h1 {
@@ -348,7 +348,7 @@ export const className = `
   .maker i {
     width: 3px;
     height: 3px;
-    background: #9e8a68;
+    background: #d183e8;
     border-radius: 50%;
     opacity: 0.75;
   }
@@ -369,7 +369,7 @@ export const className = `
     gap: 10px;
     padding-top: 9px;
     border-top: 1px solid rgba(255, 255, 255, 0.09);
-    color: rgba(201, 191, 172, 0.72);
+    color: rgba(133, 197, 218, 0.72);
     font-size: 8.5px;
     font-weight: 550;
     letter-spacing: 0.055em;
@@ -386,6 +386,6 @@ export const className = `
 
   .source {
     flex: none;
-    color: rgba(201, 191, 172, 0.5);
+    color: rgba(133, 197, 218, 0.5);
   }
 `;
