@@ -284,7 +284,7 @@ export const render = (state, dispatch) => {
 
 export const className = `
   top: 50%;
-  left: 28px;
+  left: 378px;
   width: 366px;
   transform: translateY(-50%);
   color: #dde3e9;
@@ -393,4 +393,12 @@ export const className = `
   .loading small { max-width: 280px; color: #e2b04a; text-align: center; }
   .spinner { width: 17px; height: 17px; border: 2px solid rgba(133,197,218,0.18); border-top-color: #85c5da; border-radius: 50%; animation: spin 0.9s linear infinite; }
   @keyframes spin { to { transform: rotate(360deg); } }
+
+  @media (max-width: 1200px) {
+    left: 50%;
+    width: 340px;
+    transform: translate(-50%, -50%);
+
+    .panel { width: 340px; }
+  }
 `;
