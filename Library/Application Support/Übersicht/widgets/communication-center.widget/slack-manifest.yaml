@@ -1,0 +1,36 @@
+_metadata:
+  major_version: 2
+  minor_version: 1
+display_information:
+  name: Übersicht Communications
+  description: Personal desktop inbox for DMs, mentions, reactions, and followed threads
+  background_color: "#0d0f13"
+oauth_config:
+  scopes:
+    user:
+      - channels:history
+      - channels:read
+      - chat:write
+      - groups:history
+      - groups:read
+      - im:history
+      - im:read
+      - mpim:history
+      - mpim:read
+      - reactions:read
+      - users:read
+settings:
+  event_subscriptions:
+    user_events:
+      - channel_marked
+      - group_marked
+      - im_marked
+      - message.channels
+      - message.groups
+      - message.im
+      - message.mpim
+      - mpim_marked
+      - reaction_added
+  org_deploy_enabled: false
+  socket_mode_enabled: true
+  token_rotation_enabled: false
