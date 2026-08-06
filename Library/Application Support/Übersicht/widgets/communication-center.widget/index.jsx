@@ -227,7 +227,7 @@ const EmailPanel = ({ email, dispatch }) => {
   }
   const accountErrors = (email.accounts || []).filter((account) => account.error);
   return (
-    <div className="content">
+    <div className="content emailcontent">
       {!email.protonConfigured && (
         <div className="protonsetup">
           <div><strong>Finish Proton Bridge setup</strong><span>Sign in, then add the Bridge account to Apple Mail.</span></div>
@@ -244,9 +244,11 @@ const EmailPanel = ({ email, dispatch }) => {
           </span>
         ))}
       </div>
-      {(email.items || []).length ? email.items.map((item, index) => <EmailItem key={`${item.account}-${item.messageId || item.internalId}-${index}`} item={item} dispatch={dispatch} />) : (
-        <div className="empty"><strong>{accountErrors.length ? "Mail incomplete" : "Inbox zero"}</strong><span>{accountErrors.length ? "Some accounts could not be checked." : "No unread messages in the Apple Mail accounts."}</span></div>
-      )}
+      <div className="emaillist">
+        {(email.items || []).length ? email.items.map((item, index) => <EmailItem key={`${item.account}-${item.messageId || item.internalId}-${index}`} item={item} dispatch={dispatch} />) : (
+          <div className="empty"><strong>{accountErrors.length ? "Mail incomplete" : "Inbox zero"}</strong><span>{accountErrors.length ? "Some accounts could not be checked." : "No unread messages in the Apple Mail accounts."}</span></div>
+        )}
+      </div>
     </div>
   );
 };
@@ -259,10 +261,10 @@ export const render = (state, dispatch) => {
   const emailUnread = state.summary.email.totalUnread || 0;
   return (
     <section className="panel">
-      <header>
-        <div className="heading"><span className="title">Comms</span><span className="scope">focus inbox</span></div>
-        <span className={`status ${state.summary.slack.state}`}><i />{state.summary.slack.state}</span>
-      </header>
+      <div className="commheader">
+        <div className="commheading"><span className="commtitle">Comms</span><span className="commscope">focus inbox</span></div>
+        <span className={`commstatus ${state.summary.slack.state}`}><i />{state.summary.slack.state}</span>
+      </div>
       <nav className="tabs">
         <button className={state.tab === "slack" ? "active" : ""} onClick={() => dispatch({ type: "TAB", tab: "slack" })}>
           slack <b>{slackUnread}</b>
@@ -308,32 +310,37 @@ export const className = `
     backdrop-filter: blur(22px) saturate(1.08);
   }
 
-  header {
+  .commheader {
+    position: relative;
+    z-index: 3;
     display: flex;
     flex: none;
     align-items: baseline;
     justify-content: space-between;
     height: 43px;
     padding: 14px 16px 10px;
+    background: rgba(13, 15, 19, 0.98);
     border-bottom: 1px solid rgba(255, 255, 255, 0.08);
   }
-  .heading { display: flex; align-items: baseline; gap: 10px; }
-  .title { color: #aab4bf; font-size: 11px; letter-spacing: 0.22em; text-transform: uppercase; }
-  .scope { color: #626c77; font-size: 8px; text-transform: uppercase; }
-  .status { color: #737e89; font-size: 8px; text-transform: uppercase; }
-  .status i { display: inline-block; width: 5px; height: 5px; margin-right: 6px; background: #e2b04a; border-radius: 50%; }
-  .status.connected i { background: #7fbf9e; }
-  .status.setup i { background: #d183e8; }
+  .commheading { display: flex; align-items: baseline; gap: 10px; }
+  .commtitle { display: block; color: #aab4bf; font-size: 11px; letter-spacing: 0.22em; text-transform: uppercase; }
+  .commscope { display: block; color: #626c77; font-size: 8px; text-transform: uppercase; }
+  .commstatus { color: #737e89; font-size: 8px; text-transform: uppercase; }
+  .commstatus i { display: inline-block; width: 5px; height: 5px; margin-right: 6px; background: #e2b04a; border-radius: 50%; }
+  .commstatus.connected i { background: #7fbf9e; }
+  .commstatus.setup i { background: #d183e8; }
 
-  .tabs { display: flex; flex: none; height: 39px; padding: 6px 10px; border-bottom: 1px solid rgba(255, 255, 255, 0.06); }
+  .tabs { position: relative; z-index: 3; display: flex; flex: none; height: 39px; padding: 6px 10px; background: rgba(13, 15, 19, 0.98); border-bottom: 1px solid rgba(255, 255, 255, 0.06); }
   .tabs button { padding: 5px 10px; color: #6f7984; background: transparent; border: 0; border-radius: 5px; font-size: 9px; letter-spacing: 0.09em; text-transform: uppercase; }
   .tabs button.active { color: #dce3e9; background: rgba(133, 197, 218, 0.13); }
   .tabs button b { min-width: 14px; padding: 1px 4px; margin-left: 5px; color: #9dcfe0; background: rgba(133, 197, 218, 0.12); border-radius: 8px; font-size: 7px; font-weight: 500; }
   .tabs .refresh { margin-left: auto; color: #66717c; font-family: -apple-system, sans-serif; font-size: 14px; }
 
   .content { flex: 1; min-height: 0; overflow-y: auto; scrollbar-width: thin; scrollbar-color: rgba(133, 197, 218, 0.26) transparent; }
-  .content::-webkit-scrollbar { width: 5px; }
-  .content::-webkit-scrollbar-thumb { background: rgba(133, 197, 218, 0.23); border-radius: 3px; }
+  .content::-webkit-scrollbar, .emaillist::-webkit-scrollbar { width: 5px; }
+  .content::-webkit-scrollbar-thumb, .emaillist::-webkit-scrollbar-thumb { background: rgba(133, 197, 218, 0.23); border-radius: 3px; }
+  .emailcontent { display: flex; flex-direction: column; overflow: hidden; }
+  .emaillist { flex: 1; min-height: 0; overflow-y: auto; scrollbar-width: thin; scrollbar-color: rgba(133, 197, 218, 0.26) transparent; }
 
   .item { position: relative; display: flex; width: 100%; flex-direction: column; padding: 9px 14px 10px 16px; color: inherit; text-align: left; background: transparent; border: 0; border-bottom: 1px solid rgba(255, 255, 255, 0.052); }
   .item.unread { background: rgba(133, 197, 218, 0.045); }
@@ -370,7 +377,7 @@ export const className = `
   .protonsetup strong { color: #c5a8ff; font-size: 8.5px; font-weight: 500; }
   .protonsetup span { color: #786c96; font-size: 7px; line-height: 1.4; }
   .protonsetup button { flex: none; padding: 5px 7px; color: #c5a8ff; background: rgba(132,92,220,0.13); border: 1px solid rgba(132,92,220,0.18); border-radius: 4px; font-size: 6.5px; text-transform: uppercase; }
-  .accountstrip { display: flex; min-height: 31px; align-items: center; gap: 9px; padding: 6px 13px; overflow-x: auto; color: #65707b; border-bottom: 1px solid rgba(255,255,255,0.05); font-size: 7px; white-space: nowrap; }
+  .accountstrip { display: flex; flex: none; height: 34px; align-items: center; gap: 9px; padding: 8px 13px; overflow-x: auto; overflow-y: hidden; color: #65707b; background: rgba(13, 15, 19, 0.94); border-bottom: 1px solid rgba(255,255,255,0.07); font-size: 7px; line-height: 1; white-space: nowrap; }
   .accountstrip span { display: flex; align-items: center; gap: 4px; }
   .accountstrip i { width: 4px; height: 4px; background: #515b65; border-radius: 50%; }
   .accountstrip i.hot { background: #85c5da; }

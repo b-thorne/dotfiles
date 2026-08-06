@@ -160,7 +160,7 @@ export const className = `
     flex-direction: column;
     width: 334px;
     height: calc(25vh - 22px);
-    min-height: 240px;
+    min-height: 0;
     overflow: hidden;
     background: rgba(13, 15, 19, 0.78);
     border: 1px solid rgba(255, 255, 255, 0.09);
