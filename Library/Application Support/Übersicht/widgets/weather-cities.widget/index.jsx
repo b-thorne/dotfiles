@@ -458,7 +458,6 @@ export const className = `
     padding: 12px 16px 10px;
     overflow: hidden;
     background: rgba(13, 15, 19, 0.72);
-    backdrop-filter: blur(18px);
     border: 1px solid rgba(255, 255, 255, 0.07);
     border-radius: 10px;
   }
