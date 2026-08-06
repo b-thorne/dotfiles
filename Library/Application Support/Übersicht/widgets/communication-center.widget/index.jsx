@@ -283,10 +283,9 @@ export const render = (state, dispatch) => {
 };
 
 export const className = `
-  top: 50%;
-  left: 378px;
-  width: 366px;
-  transform: translateY(-50%);
+  top: calc(25vh + 22px);
+  left: 28px;
+  width: 334px;
   color: #dde3e9;
   font-family: ui-monospace, "SF Mono", Menlo, monospace;
   -webkit-font-smoothing: antialiased;
@@ -299,8 +298,8 @@ export const className = `
   .panel {
     display: flex;
     flex-direction: column;
-    width: 366px;
-    height: min(650px, calc(100vh - 56px));
+    width: 334px;
+    height: calc(30vh - 26.4px);
     overflow: hidden;
     background: rgba(13, 15, 19, 0.82);
     border: 1px solid rgba(255, 255, 255, 0.09);
@@ -393,12 +392,4 @@ export const className = `
   .loading small { max-width: 280px; color: #e2b04a; text-align: center; }
   .spinner { width: 17px; height: 17px; border: 2px solid rgba(133,197,218,0.18); border-top-color: #85c5da; border-radius: 50%; animation: spin 0.9s linear infinite; }
   @keyframes spin { to { transform: rotate(360deg); } }
-
-  @media (max-width: 1200px) {
-    left: 50%;
-    width: 340px;
-    transform: translate(-50%, -50%);
-
-    .panel { width: 340px; }
-  }
 `;

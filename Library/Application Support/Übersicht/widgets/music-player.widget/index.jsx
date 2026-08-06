@@ -595,7 +595,7 @@ export const className = `
     display: flex;
     flex-direction: column;
     width: 334px;
-    height: 560px;
+    height: calc(45vh - 39.6px);
     padding: 14px 16px 13px;
     overflow: hidden;
     background: rgba(13, 15, 19, 0.78);
