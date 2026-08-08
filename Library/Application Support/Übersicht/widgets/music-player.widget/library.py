@@ -298,7 +298,7 @@ def build_index(media_root: Path, audio_paths: list[Path], playlist_paths: list[
 
     tracks = [
         track_record(path, media_root, item)
-        for path, item in zip(audio_paths, metadata, strict=True)
+        for path, item in zip(audio_paths, metadata)
     ]
     tracks.sort(
         key=lambda track: (
