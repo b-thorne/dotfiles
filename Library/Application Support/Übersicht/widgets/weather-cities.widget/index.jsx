@@ -439,7 +439,7 @@ export const render = (state, dispatch) => {
 };
 
 export const className = `
-  top: 234px;
+  top: 306px;
   right: 28px;
   font-family: ui-monospace, "SF Mono", Menlo, monospace;
   color: #dde3e9;
