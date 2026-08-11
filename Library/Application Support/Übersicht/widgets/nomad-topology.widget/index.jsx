@@ -252,12 +252,16 @@ export const className = `
 
   .panel {
     width: 300px;
+    max-height: 264px;
     padding: 14px 16px 12px;
+    overflow-y: auto;
+    scrollbar-width: none;
     background: rgba(13, 15, 19, 0.72);
     backdrop-filter: blur(18px);
     border: 1px solid rgba(255, 255, 255, 0.07);
     border-radius: 10px;
   }
+  .panel::-webkit-scrollbar { display: none; }
 
   .head {
     display: flex; justify-content: space-between; align-items: baseline;
