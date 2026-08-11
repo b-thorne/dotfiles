@@ -14,11 +14,13 @@ const SEP = "@@NOMAD@@";
 
 const auth = NOMAD_TOKEN ? `-H "X-Nomad-Token: ${NOMAD_TOKEN}"` : "";
 const get = (path) => `curl -sm 8 ${auth} "${NOMAD_ADDR}${path}"`;
+const storageStatus = "$HOME/.local/bin/nomad-storage-status";
 
 export const command = [
   get("/v1/nodes?resources=true"),
   get("/v1/allocations?resources=true&filter=ClientStatus%20%3D%3D%20%22running%22"),
   get("/v1/jobs"),
+  storageStatus,
 ].join(`; echo "${SEP}"; `);
 
 export const refreshFrequency = REFRESH_MS;
@@ -27,6 +29,16 @@ export const refreshFrequency = REFRESH_MS;
 
 const parse = (s) => {
   try { return JSON.parse(s); } catch (e) { return null; }
+};
+
+const storageFrom = (output) => parse((output || "").split(SEP)[3]);
+
+const humanAge = (seconds) => {
+  if (seconds == null) return "unknown";
+  if (seconds < 60) return "now";
+  if (seconds < 3600) return `${Math.floor(seconds / 60)}m`;
+  if (seconds < 86400) return `${Math.floor(seconds / 3600)}h`;
+  return `${Math.floor(seconds / 86400)}d`;
 };
 
 const isGpu = (d) =>
@@ -139,13 +151,46 @@ const GpuSlots = ({ used, total }) => (
   </div>
 );
 
+const stateClass = (state) =>
+  state === "mounted" || state === "working" ? "ok" : state === "stale" ? "warn" : "crit";
+
+const Storage = ({ status }) => {
+  const nas = (status && status.nas) || { state: "unknown", path: "/Volumes/nomad" };
+  const cloud = (status && status.cloudMounter) || {
+    state: "unknown",
+    path: "~/Library/CloudStorage/CloudMounter-nucleus",
+  };
+  return (
+    <div className="storage">
+      <div className="storagehead">storage</div>
+      <div className="storageRow">
+        <span className={`dot ${stateClass(nas.state)}`} />
+        <span className="storageName">nas</span>
+        <span className="storagePath">{nas.path}</span>
+        <span className={`storageState ${stateClass(nas.state)}`}>{nas.state}</span>
+      </div>
+      <div className="storageRow">
+        <span className={`dot ${stateClass(cloud.state)}`} />
+        <span className="storageName">cloud</span>
+        <span className="storagePath">{cloud.path}</span>
+        <span className={`storageState ${stateClass(cloud.state)}`}>{cloud.state}</span>
+      </div>
+      <div className="storageMeta">
+        CloudMounter {cloud.running ? "running" : "stopped"} · activity {humanAge(cloud.lastActivityAgeSeconds)}
+      </div>
+    </div>
+  );
+};
+
 export const render = ({ output }) => {
+  const storage = storageFrom(output);
   const m = buildModel(output);
   if (!m) {
     return (
       <div className="panel">
         <div className="head"><span className="title">nomad</span></div>
         <div className="offline">cluster unreachable · {NOMAD_ADDR.replace(/^https?:\/\//, "")}</div>
+        <Storage status={storage} />
       </div>
     );
   }
@@ -190,6 +235,8 @@ export const render = ({ output }) => {
           )}
         </div>
       )}
+
+      <Storage status={storage} />
     </div>
   );
 };
@@ -257,5 +304,16 @@ export const className = `
   .jobmeta { margin-left: auto; padding-left: 10px; font-size: 9px; color: #6b7480; white-space: nowrap; }
   .more { font-size: 9px; color: #6b7480; margin-top: 4px; }
 
-  .offline { font-size: 10px; color: #e2b04a; }
+  .storage { margin-top: 8px; padding-top: 8px; border-top: 1px solid rgba(255, 255, 255, 0.08); }
+  .storagehead { font-size: 9px; letter-spacing: 0.2em; text-transform: uppercase; color: #6b7480; margin-bottom: 6px; }
+  .storageRow { display: flex; align-items: baseline; min-width: 0; font-size: 9px; margin: 4px 0; }
+  .storageName { width: 38px; flex: none; color: #cfd6dd; }
+  .storagePath { min-width: 0; flex: 1; color: #6b7480; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .storageState { margin-left: 8px; flex: none; }
+  .storageState.ok { color: #7fbf9e; }
+  .storageState.warn { color: #e2b04a; }
+  .storageState.crit { color: #e26d5a; }
+  .storageMeta { margin: 5px 0 0 12px; font-size: 8px; color: #58616c; }
+
+  .offline { font-size: 10px; color: #e2b04a; margin-bottom: 8px; }
 `;

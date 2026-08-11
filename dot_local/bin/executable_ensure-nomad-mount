@@ -1,0 +1,32 @@
+#!/bin/zsh
+# Keep Atomic's guest SMB share mounted after login and network changes.
+
+set -u
+
+readonly server="10.10.20.241"
+readonly share="nomad"
+readonly mount_point="/Volumes/nomad"
+readonly mount_url="smb://GUEST:@${server}/${share}"
+readonly log_file="${HOME}/Library/Logs/nomad-mount.log"
+
+log() {
+  /usr/bin/printf '%s %s\n' "$(/bin/date '+%Y-%m-%d %H:%M:%S')" "$*" >> "${log_file}"
+}
+
+# A healthy or stale mount is still mounted. Do not force-unmount it here: that
+# could interrupt active I/O. The Übersicht status probe calls out stale mounts.
+if /sbin/mount | /usr/bin/grep -Fq " on ${mount_point} (smbfs"; then
+  exit 0
+fi
+
+# Retry on the next launchd interval when the NAS/VPN is unavailable.
+if ! /usr/bin/nc -w 3 -z "${server}" 445 >/dev/null 2>&1; then
+  exit 0
+fi
+
+if mounted_path=$(/usr/bin/osascript -e "mount volume \"${mount_url}\"" 2>&1); then
+  log "mounted ${server}/${share} at ${mounted_path}"
+else
+  log "mount failed: ${mounted_path}"
+  exit 1
+fi

@@ -1,0 +1,106 @@
+#!/usr/bin/python3
+"""Emit bounded, credential-free NAS and CloudMounter status for Übersicht."""
+
+import json
+import os
+import subprocess
+import time
+
+NAS_PATH = "/Volumes/nomad"
+CLOUD_PATH = os.path.expanduser("~/Library/CloudStorage/CloudMounter-nucleus")
+CLOUD_DISPLAY_PATH = "~/Library/CloudStorage/CloudMounter-nucleus"
+CLOUD_LOG = os.path.expanduser("~/Library/Logs/CloudMounter.log")
+PROBE_TIMEOUT_SECONDS = 4
+
+
+def responsive(path):
+    if not os.path.isdir(path):
+        return False
+    try:
+        # Enumerating one entry reaches through SMB/File Provider instead of
+        # merely checking the local mount-point inode.
+        result = subprocess.run(
+            [
+                "/usr/bin/find",
+                path,
+                "-mindepth",
+                "1",
+                "-maxdepth",
+                "1",
+                "-print",
+                "-quit",
+            ],
+            stdout=subprocess.DEVNULL,
+            stderr=subprocess.DEVNULL,
+            timeout=PROBE_TIMEOUT_SECONDS,
+            check=False,
+        )
+        return result.returncode == 0
+    except (OSError, subprocess.TimeoutExpired):
+        return False
+
+
+def process_running(name):
+    return subprocess.run(
+        ["/usr/bin/pgrep", "-x", name],
+        stdout=subprocess.DEVNULL,
+        stderr=subprocess.DEVNULL,
+        check=False,
+    ).returncode == 0
+
+
+def mounted_at(path):
+    try:
+        output = subprocess.check_output(["/sbin/mount"], text=True, timeout=2)
+    except (OSError, subprocess.SubprocessError):
+        return False
+    return " on {} (smbfs".format(path) in output
+
+
+def log_age_seconds():
+    try:
+        return max(0, int(time.time() - os.path.getmtime(CLOUD_LOG)))
+    except OSError:
+        return None
+
+
+nas_mounted = mounted_at(NAS_PATH)
+nas_responsive = nas_mounted and responsive(NAS_PATH)
+if not nas_mounted:
+    nas_state = "unmounted"
+elif nas_responsive:
+    nas_state = "mounted"
+else:
+    nas_state = "stale"
+
+cloud_registered = os.path.isdir(CLOUD_PATH)
+cloud_running = process_running("CloudMounter")
+cloud_responsive = cloud_registered and responsive(CLOUD_PATH)
+if not cloud_registered:
+    cloud_state = "unmounted"
+elif not cloud_running or not cloud_responsive:
+    cloud_state = "stale"
+else:
+    cloud_state = "working"
+
+print(
+    json.dumps(
+        {
+            "nas": {
+                "state": nas_state,
+                "mounted": nas_mounted,
+                "responsive": nas_responsive,
+                "path": NAS_PATH,
+            },
+            "cloudMounter": {
+                "state": cloud_state,
+                "mounted": cloud_registered,
+                "running": cloud_running,
+                "responsive": cloud_responsive,
+                "path": CLOUD_DISPLAY_PATH,
+                "lastActivityAgeSeconds": log_age_seconds(),
+            },
+        },
+        separators=(",", ":"),
+    )
+)
