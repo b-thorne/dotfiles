@@ -13,8 +13,9 @@ command -v sshfs >/dev/null 2>&1 || exit 0          # FUSE-T not installed yet
 mkdir -p "$mount_point"
 
 if mount | grep -Fq " on ${mount_point} "; then
-  # Mounted, but is it alive? A dead sshfs hangs every caller, so probe with a timeout.
-  if timeout 5 ls "$mount_point" >/dev/null 2>&1; then exit 0; fi
+  # Mounted, but is it alive? A dead sshfs hangs every caller, so probe with a
+  # deadline. macOS has no timeout(1); perl's alarm does the same job.
+  if perl -e 'alarm 5; exec @ARGV' ls "$mount_point" >/dev/null 2>&1; then exit 0; fi
   log "stale mount, unmounting"
   umount -f "$mount_point" 2>/dev/null || diskutil unmount force "$mount_point" >/dev/null 2>&1
 fi
