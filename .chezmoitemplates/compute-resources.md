@@ -14,9 +14,12 @@ wait in the cluster queue.
 - Docker 29 on `desk` has the NVIDIA runtime. `docker run --gpus all` works.
   The user is in the docker group and is logged in to the ECR and cr.atmc.dev
   registries.
-- The account on `desk` has sudo only with a password. Do the work you can as
-  the user. For apt, driver, or shell changes, write a script and ask the
-  user to run it with sudo.
+- The account on `desk` has passwordless sudo (since 2026-10-06). Agents may
+  run apt, systemd, and driver changes there directly; say what changed.
+- The Atomic NAS share is mounted on `desk` at `/mnt/nfs/nomad`, the same
+  path as on cluster nodes and the same bytes as `/Volumes/Nomad` on the
+  Mac. It is an SMB guest automount; the NFS export does not work from the
+  tailnet. Personal staging goes in `/mnt/nfs/nomad/dev/bthorne/`.
 - `desk` accepts tailnet subnet routes, so office names (cr.atmc.dev,
   nomad.service.consul) and the NAS at 10.10.20.241 resolve and route from
   it. Keep the cable link off 10.0.0.0/8: the tailnet advertises 10.0.0.0/16.
