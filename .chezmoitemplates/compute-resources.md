@@ -23,6 +23,10 @@ wait in the cluster queue.
 - `desk` accepts tailnet subnet routes, so office names (cr.atmc.dev,
   nomad.service.consul) and the NAS at 10.10.20.241 resolve and route from
   it. Keep the cable link off 10.0.0.0/8: the tailnet advertises 10.0.0.0/16.
+- Agents run on `desk` directly: Claude Code, Codex, pi, and a-gents (skills
+  synced) are installed there, with Node 22. Start them inside tmux so they
+  survive a disconnect: from the Mac, `desk <name>` opens or re-attaches the
+  tmux session `<name>` on desk; `desk-ls` lists them.
 - `desk` is a desktop, not a server. A job on it stops when the box sleeps
   or reboots. Keep inputs and outputs under `~/work` on `desk`, or on the
   shared NAS.
