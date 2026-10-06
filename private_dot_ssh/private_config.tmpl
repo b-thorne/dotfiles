@@ -13,11 +13,14 @@ Include config.d/*.conf
 #
 # Three paths to it, in order of preference:
 #
-#   desk-dock   10.0.0.2       Cable from the Thunderbolt dock. Static on both
+#   desk-dock   192.168.77.2   Cable from the Thunderbolt dock. Static on both
 #                              ends: Mac en8 (service "Thunderbolt Ethernet
-#                              Slot 2") is 10.0.0.1/24, box enp6s0 (profile
-#                              "Wired connection 1") is 10.0.0.2/24. The link
+#                              Slot 2") is 192.168.77.1/24, box enp6s0 (profile
+#                              "Wired connection 1") is 192.168.77.2/24. The link
 #                              has no DHCP and no gateway. Lowest latency.
+#                              Not 10.x: the tailnet's AWS subnet router
+#                              advertises 10.0.0.0/16, and the box accepts
+#                              tailnet routes, which would swallow the link.
 #   desk        MagicDNS       Tailscale; works from anywhere the tailnet does.
 #   desk-wifi   192.168.60.5   Same Wi-Fi LAN; DHCP lease, may change.
 #
@@ -25,7 +28,7 @@ Include config.d/*.conf
 # sudo on desk needs a password; agents cannot run apt or chsh unattended.
 # ---------------------------------------------------------------------------
 Host desk-dock
-    HostName 10.0.0.2
+    HostName 192.168.77.2
     # No gateway on the cable link: fail fast when the dock is unplugged.
     ConnectTimeout 5
 
