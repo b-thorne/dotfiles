@@ -1,0 +1,96 @@
+{{- if eq .chezmoi.os "linux" -}}
+#!/bin/bash
+# Install the tools ~/.zshrc expects on a Linux host (desk).
+#
+# User-space binaries go to ~/.local/bin with a pinned version and checksum, so
+# a stale distro package never wins. Distro packages go through apt only when
+# sudo works without a prompt or a terminal is attached; otherwise the script
+# prints the command to run by hand. chezmoi re-runs this script when its
+# content changes, for example after a version bump below.
+set -euo pipefail
+
+bin="$HOME/.local/bin"
+mkdir -p "$bin"
+tmp=$(mktemp -d)
+trap 'rm -rf "$tmp"' EXIT HUP INT TERM
+
+arch=$(uname -m)
+if [ "$arch" != x86_64 ]; then
+  echo "install-packages-linux: only x86_64 assets are pinned (got $arch)" >&2
+  exit 1
+fi
+
+# fetch <url> <sha256> <out>
+fetch() {
+  curl -fsSL "$1" -o "$3"
+  echo "$2  $3" | sha256sum -c - >/dev/null
+}
+
+# have <command> <version-substring>
+have() {
+  command -v "$1" >/dev/null 2>&1 && "$1" --version 2>/dev/null | grep -qF "$2"
+}
+
+# fzf: `fzf --zsh` needs 0.48 or later; jammy ships 0.29.
+fzf_version=0.74.4
+if ! have fzf "$fzf_version"; then
+  fetch "https://github.com/junegunn/fzf/releases/download/v${fzf_version}/fzf-${fzf_version}-linux_amd64.tar.gz" \
+    05e6813a337cc722c3ed07e54a764b75cc5d671e2e60459db0ba696ee5fa7504 "$tmp/fzf.tgz"
+  tar -xzf "$tmp/fzf.tgz" -C "$tmp" fzf
+  install -m 755 "$tmp/fzf" "$bin/fzf"
+fi
+
+# eza: not packaged in jammy.
+eza_version=0.23.5
+if ! have eza "$eza_version"; then
+  fetch "https://github.com/eza-community/eza/releases/download/v${eza_version}/eza_x86_64-unknown-linux-gnu.tar.gz" \
+    35c70c5c43c29108075e58b893234c67ef585f0b53a7eaf8e9e7d4eec9f339b4 "$tmp/eza.tgz"
+  tar -xzf "$tmp/eza.tgz" -C "$tmp" ./eza
+  install -m 755 "$tmp/eza" "$bin/eza"
+fi
+
+# zoxide: jammy ships 0.4, which predates `zoxide init zsh` options we use.
+zoxide_version=0.10.0
+if ! have zoxide "$zoxide_version"; then
+  fetch "https://github.com/ajeetdsouza/zoxide/releases/download/v${zoxide_version}/zoxide-${zoxide_version}-x86_64-unknown-linux-musl.tar.gz" \
+    2d93385b99f3e82cf2701609a1bffcad863fbeb75aa3fe7eb6be4d29be68b1ae "$tmp/zoxide.tgz"
+  tar -xzf "$tmp/zoxide.tgz" -C "$tmp" zoxide
+  install -m 755 "$tmp/zoxide" "$bin/zoxide"
+fi
+
+# uv: the repo convention runs project tools through `uv run`.
+uv_version=0.12.23
+if ! have uv "$uv_version"; then
+  fetch "https://github.com/astral-sh/uv/releases/download/${uv_version}/uv-x86_64-unknown-linux-gnu.tar.gz" \
+    9167d72b3319674b6303c4cbe071854bba13ebdf3d76b1a7cbdc175471fb66d6 "$tmp/uv.tgz"
+  tar -xzf "$tmp/uv.tgz" -C "$tmp"
+  install -m 755 "$tmp/uv-x86_64-unknown-linux-gnu/uv" "$bin/uv"
+  install -m 755 "$tmp/uv-x86_64-unknown-linux-gnu/uvx" "$bin/uvx"
+fi
+
+# Distro packages: the shell itself and its two plugins.
+apt_packages=(zsh zsh-autosuggestions zsh-syntax-highlighting)
+missing=()
+for package in "${apt_packages[@]}"; do
+  dpkg -s "$package" >/dev/null 2>&1 || missing+=("$package")
+done
+if [ ${#missing[@]} -gt 0 ]; then
+  if sudo -n true 2>/dev/null || [ -t 0 ]; then
+    sudo apt-get install -y "${missing[@]}"
+  else
+    echo "install-packages-linux: no sudo without a terminal. Run by hand:" >&2
+    echo "  sudo apt-get install -y ${missing[*]}" >&2
+  fi
+fi
+
+# Make zsh the login shell once it exists.
+zsh_bin=$(command -v zsh 2>/dev/null || true)
+login_shell=$(getent passwd "$USER" | cut -d: -f7)
+if [ -n "$zsh_bin" ] && [ "$login_shell" != "$zsh_bin" ]; then
+  if [ -t 0 ]; then
+    chsh -s "$zsh_bin"
+  else
+    echo "install-packages-linux: run by hand: chsh -s $zsh_bin" >&2
+  fi
+fi
+{{ end -}}

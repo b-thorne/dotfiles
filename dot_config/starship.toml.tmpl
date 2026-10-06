@@ -1,0 +1,57 @@
+{{- /* Starship prompt for both machines. Rendered by chezmoi. */ -}}
+# ~/.config/starship.toml — rendered by chezmoi from dot_config/starship.toml.tmpl.
+#
+# The first item on the prompt is a machine badge, so a shell on the Linux box
+# is never mistaken for a local one:
+#    mac   (green)  — the MacBook "pro"
+#   󰌽 box   (yellow) — the Linux desktop "desk" (Pop!_OS, RTX 4070 Ti SUPER)
+# The badge is an env_var module with a baked-in default, so it costs no
+# process spawn. Set STARSHIP_MACHINE to override the label in one shell.
+palette = "widget_glass"
+
+format = """
+${env_var.machine} [$username](muted) [@](dim) [$hostname](muted)[:](dim) [$directory](cyan) $git_branch
+[❯](pink) """
+
+[env_var.machine]
+variable = "STARSHIP_MACHINE"
+{{- if eq .chezmoi.os "darwin" }}
+default = "mac"
+style = "bold green"
+format = "[ $env_value]($style)"
+{{- else }}
+default = "box"
+style = "bold yellow"
+format = "[󰌽 $env_value]($style)"
+{{- end }}
+
+[username]
+show_always = true
+format = "[$user]($style)"
+style_user = "muted"
+
+[hostname]
+ssh_only = false
+format = "[$hostname]($style)"
+style = "muted"
+
+[directory]
+format = "[$path]($style)"
+style = "cyan"
+
+[git_branch]
+symbol = " "
+format = "on [$symbol$branch(:$remote_branch)]($style) "
+style = "pink"
+
+[palettes.widget_glass]
+background = "#0d0f13"
+foreground = "#dde3e9"
+muted = "#7b8590"
+dim = "#59636e"
+cyan = "#85c5da"
+pink = "#d183e8"
+red = "#d78383"
+green = "#7fbf9e"
+yellow = "#e2b04a"
+blue = "#8fb4d9"

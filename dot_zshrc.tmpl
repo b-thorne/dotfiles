@@ -1,24 +1,131 @@
-# Make a Homebrew installation available in fresh shells.
+{{- /* ~/.zshrc for both machines: the MacBook "pro" (darwin) and the Linux box "desk". */ -}}
+{{- $darwin := eq .chezmoi.os "darwin" -}}
+# ~/.zshrc — rendered by chezmoi from dot_zshrc.tmpl; edit the source, not this file.
+# Kept minimal and organized. Secrets live in ~/.zsh_secrets (chmod 600).
+# Platform: {{ .chezmoi.os }} ({{ .chezmoi.hostname }})
+
+# ----- PATH -----
+export PATH="$HOME/.local/bin:$PATH"
+{{- if $darwin }}
+
+# Homebrew: Apple silicon or Intel prefix.
 if [[ -x /opt/homebrew/bin/brew ]]; then
   eval "$(/opt/homebrew/bin/brew shellenv)"
 elif [[ -x /usr/local/bin/brew ]]; then
   eval "$(/usr/local/bin/brew shellenv)"
 fi
+{{- end }}
 
-# Secrets are kept outside this public repository.
+# >>> juliaup initialize >>>
+
+# !! Contents within this block are managed by juliaup !!
+
+if [[ -d "$HOME/.juliaup/bin" ]]; then
+  path=("$HOME/.juliaup/bin" $path)
+  export PATH
+  # Tab completion for juliaup and julia channel selection
+  [ -f "$HOME/.julia/juliaup/completions/zsh.zsh" ] && source "$HOME/.julia/juliaup/completions/zsh.zsh"
+fi
+
+# <<< juliaup initialize <<<
+
+# ----- Secrets (tokens) -----
 [ -f "$HOME/.zsh_secrets" ] && source "$HOME/.zsh_secrets"
 
-# Aliases
-alias ls='ls -l'
-alias cat='bat'
+# ----- Default directory for new terminals -----
+# Interactive shells that start in $HOME jump to the atomic repo
+# (iTerm2's profile working directory handles this too; this covers other terminals and ssh).
+if [[ -o interactive && "$PWD" == "$HOME" && -d "$HOME/work/atomic" ]]; then
+  cd "$HOME/work/atomic"
+fi
 
-# AWS CLI setup
-export AWS_PROFILE=dev
+# ----- Cluster endpoints -----
+# Resolves through Tailscale split DNS for the "consul" domain.
+export NOMAD_ADDR="http://nomad.service.consul:4646/"
 
-path=("$HOME/.juliaup/bin" $path)
-export PATH
+# ----- History: big, shared across terminals, deduped -----
+HISTFILE="$HOME/.zsh_history"
+HISTSIZE=200000
+SAVEHIST=200000
+setopt SHARE_HISTORY          # all open terminals see each other's history
+setopt HIST_IGNORE_ALL_DUPS   # no duplicate entries
+setopt HIST_REDUCE_BLANKS
+setopt HIST_IGNORE_SPACE      # commands starting with a space aren't saved
+setopt EXTENDED_HISTORY       # timestamps
 
-# ----- Pi toggle -----
+# ----- Completion -----
+autoload -Uz compinit && compinit
+zstyle ':completion:*' matcher-list 'm:{a-z}={A-Za-z}'   # case-insensitive
+zstyle ':completion:*' menu select
+
+# Nomad's built-in completion (uses bash-style completion hooks)
+if command -v nomad >/dev/null 2>&1; then
+  autoload -U +X bashcompinit && bashcompinit
+  complete -o nospace -C "$(command -v nomad)" nomad
+fi
+
+# ----- Interactive niceties -----
+# Each tool is optional so a half-provisioned host still gets a working shell.
+command -v starship >/dev/null 2>&1 && eval "$(starship init zsh)"   # prompt (see ~/.config/starship.toml)
+command -v zoxide   >/dev/null 2>&1 && eval "$(zoxide init zsh)"     # `z <dir>` jumps to frecent dirs
+command -v fzf      >/dev/null 2>&1 && source <(fzf --zsh)           # Ctrl-R fuzzy history, Ctrl-T files (fzf >= 0.48)
+export FZF_DEFAULT_OPTS="--height 40% --layout=reverse --border"
+
+{{ if $darwin -}}
+# zsh plugins come from Homebrew on macOS.
+_zsh_plugin_dir="${HOMEBREW_PREFIX:-/opt/homebrew}/share"
+{{- else -}}
+# zsh plugins come from the distro packages zsh-autosuggestions and zsh-syntax-highlighting.
+_zsh_plugin_dir="/usr/share"
+{{- end }}
+[ -r "$_zsh_plugin_dir/zsh-autosuggestions/zsh-autosuggestions.zsh" ] &&
+  source "$_zsh_plugin_dir/zsh-autosuggestions/zsh-autosuggestions.zsh"
+
+# ----- Aliases: files & git -----
+# eza keeps the familiar ls interface while adding structured long views,
+# Git state, clear timestamps, type indicators, and directory-first sorting.
+if command -v eza >/dev/null 2>&1; then
+  alias ls='eza --group-directories-first --classify=auto'
+  alias ll='eza --long --header --git --group --group-directories-first --time-style=long-iso'
+  alias la='eza --long --all --header --git --group --group-directories-first --time-style=long-iso'
+  alias lt='eza --tree --level=2 --group-directories-first'
+fi
+# Debian and Ubuntu install bat as batcat.
+if command -v bat >/dev/null 2>&1; then
+  alias cat='bat --paging=never'
+elif command -v batcat >/dev/null 2>&1; then
+  alias cat='batcat --paging=never'
+fi
+alias gs='git status'
+alias gd='git diff'
+alias gl='git log --oneline -15'
+
+# ----- Claude Code -----
+alias cc='claude'
+alias ccc='claude --continue'        # resume most recent conversation here
+alias ccr='claude --resume'          # pick a past conversation to resume
+
+# ----- Nomad -----
+alias nj='nomad job status'          # nj [job] — cluster jobs / one job's allocs
+alias nn='nomad node status'
+alias nps='nomad job status | tail -n +2'
+# Follow logs for an allocation: nlogs <alloc-id> [task]
+nlogs() { nomad alloc logs -f "$@" }
+# Fuzzy-pick a running allocation of a job and follow its logs: njl <job>
+njl() {
+  local alloc
+  alloc=$(nomad job allocs -t '{{ "{{range .}}{{.ID}} {{.TaskGroup}} {{.ClientStatus}}{{\"\\n\"}}{{end}}" }}' "$1" | fzf --prompt="alloc> ") || return
+  nomad alloc logs -f "${alloc%% *}"
+}
+# Plan then prompt to run an HCL job file: nrun <file.hcl>
+nrun() { nomad job plan "$1"; printf 'run %s? [y/N] ' "$1"; read -r r; [[ "$r" == y* ]] && nomad job run "$1" }
+
+# ----- Project tools (always via uv, per repo convention) -----
+alias nucleus='uv run nucleus'
+alias dvc='uv run dvc'
+{{- if $darwin }}
+
+# ----- Pi toggle (iTerm2 only) -----
 # Use hot-loaded iTerm2 profiles for the cyan shell and pink Pi guides.
 _iterm_set_profile() {
   [[ "$TERM_PROGRAM" == "iTerm.app" ]] || return 0
@@ -52,9 +159,9 @@ _pi_toggle_widget() {
 }
 zle -N _pi_toggle_widget
 bindkey '^Z' _pi_toggle_widget
+{{- end }}
 
-source "$(brew --prefix)/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh"
-
-eval "$(starship init zsh)"
-
-export PATH="$HOME/.opencode/bin:$PATH"
+# Syntax highlighting must be sourced last
+[ -r "$_zsh_plugin_dir/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh" ] &&
+  source "$_zsh_plugin_dir/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh"
+unset _zsh_plugin_dir

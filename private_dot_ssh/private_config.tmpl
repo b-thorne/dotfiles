@@ -1,0 +1,53 @@
+{{- /* ~/.ssh/config, rendered by chezmoi. Host entries for the Linux box live here on the Mac only. */ -}}
+# ~/.ssh/config — rendered by chezmoi from private_dot_ssh/config.tmpl.
+# Edit the source and run `chezmoi apply`. Machine-local additions that must
+# not be committed go in ~/.ssh/config.d/*.conf, which chezmoi does not manage.
+Include config.d/*.conf
+{{- if eq .chezmoi.os "darwin" }}
+
+# ---------------------------------------------------------------------------
+# desk — personal Linux compute box.
+#   Pop!_OS 22.04, Intel i7-14700K (20 cores / 28 threads), 62 GiB RAM,
+#   NVIDIA RTX 4070 Ti SUPER 16 GiB, 2 TB NVMe root + 1 TB NVMe second disk.
+#   Docker has the NVIDIA runtime; the user is in the docker group.
+#
+# Three paths to it, in order of preference:
+#
+#   desk-dock   10.0.0.2       Cable from the Thunderbolt dock. Static on both
+#                              ends: Mac en8 (service "Thunderbolt Ethernet
+#                              Slot 2") is 10.0.0.1/24, box enp6s0 (profile
+#                              "Wired connection 1") is 10.0.0.2/24. The link
+#                              has no DHCP and no gateway. Lowest latency.
+#   desk        MagicDNS       Tailscale; works from anywhere the tailnet does.
+#   desk-wifi   192.168.60.5   Same Wi-Fi LAN; DHCP lease, may change.
+#
+# Key: ~/.ssh/id_ed25519, installed on desk with ssh-copy-id on 2026-10-06.
+# sudo on desk needs a password; agents cannot run apt or chsh unattended.
+# ---------------------------------------------------------------------------
+Host desk-dock
+    HostName 10.0.0.2
+    # No gateway on the cable link: fail fast when the dock is unplugged.
+    ConnectTimeout 5
+
+Host desk
+    HostName desk
+
+Host desk-wifi
+    HostName 192.168.60.5
+
+Host desk desk-dock desk-wifi
+    User bthorne
+    IdentityFile ~/.ssh/id_ed25519
+    # Reuse one connection for bursts of commands (agents, scp, rsync).
+    ControlMaster auto
+    ControlPath ~/.ssh/cm-%r@%h:%p
+    ControlPersist 10m
+    ServerAliveInterval 30
+{{- end }}
+
+# Defaults for every host.
+Host *
+    AddKeysToAgent yes
+{{- if eq .chezmoi.os "darwin" }}
+    UseKeychain yes
+{{- end }}

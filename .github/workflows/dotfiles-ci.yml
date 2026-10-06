@@ -72,6 +72,7 @@ jobs:
           if grep -R -F '/Users/bthorne' \
             "$CHEZMOI_DESTINATION/.zshrc" \
             "$CHEZMOI_DESTINATION/.config" \
+            "$CHEZMOI_DESTINATION/.ssh" \
             "$CHEZMOI_DESTINATION/.pi"; then
             echo 'Rendered files contain a machine-specific home path' >&2
             exit 1
@@ -111,6 +112,76 @@ jobs:
             chezmoi \
               --source="$GITHUB_WORKSPACE" \
               --destination="$CHEZMOI_DESTINATION" \
+              managed --include=scripts --path-style=absolute
+          )
+
+  validate-linux:
+    name: Render and validate on Linux
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Check out dotfiles
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Install chezmoi and zsh
+        run: |
+          sh -c "$(curl -fsLS get.chezmoi.io)" -- -b "$RUNNER_TEMP/bin"
+          sudo apt-get update
+          sudo apt-get install -y zsh
+
+      - name: Render into a clean home directory
+        run: |
+          destination="$RUNNER_TEMP/chezmoi-home"
+          mkdir -p "$destination"
+          export HOME="$destination"
+          chezmoi="$RUNNER_TEMP/bin/chezmoi"
+
+          "$chezmoi" --source="$GITHUB_WORKSPACE" --destination="$destination" --no-tty \
+            apply --exclude=scripts
+          "$chezmoi" --source="$GITHUB_WORKSPACE" --destination="$destination" --no-tty \
+            verify --exclude=scripts
+          echo "CHEZMOI_DESTINATION=$destination" >> "$GITHUB_ENV"
+
+      - name: Validate rendered files and scripts
+        run: |
+          set -eu
+          export HOME="$CHEZMOI_DESTINATION"
+          chezmoi="$RUNNER_TEMP/bin/chezmoi"
+
+          zsh -n "$CHEZMOI_DESTINATION/.zshrc"
+          ssh -G -F "$CHEZMOI_DESTINATION/.ssh/config" example.invalid >/dev/null
+          if grep -R -F -e '/Users/bthorne' -e '/home/bthorne' \
+            "$CHEZMOI_DESTINATION/.zshrc" "$CHEZMOI_DESTINATION/.config" \
+            "$CHEZMOI_DESTINATION/.ssh" "$CHEZMOI_DESTINATION/.pi"; then
+            echo 'Rendered files contain a machine-specific home path' >&2
+            exit 1
+          fi
+          python3 -c 'import pathlib, sys, tomllib; tomllib.loads(pathlib.Path(sys.argv[1]).read_text())' \
+            "$CHEZMOI_DESTINATION/.config/starship.toml"
+          grep -F 'default = "box"' "$CHEZMOI_DESTINATION/.config/starship.toml" >/dev/null
+
+          # macOS-only targets must not render on Linux.
+          for absent in Brewfile Library .config/iterm2 .local/bin/ensure-nomad-mount; do
+            if [ -e "$CHEZMOI_DESTINATION/$absent" ]; then
+              echo "macOS-only target rendered on Linux: $absent" >&2
+              exit 1
+            fi
+          done
+
+          while IFS= read -r target; do
+            rendered=$(mktemp)
+            "$chezmoi" --source="$GITHUB_WORKSPACE" --destination="$CHEZMOI_DESTINATION" \
+              cat "$target" > "$rendered"
+            case "$(head -n 1 "$rendered")" in
+              *bash*) bash -n "$rendered" ;;
+              *sh*) sh -n "$rendered" ;;
+              *) echo "Unsupported script interpreter: $target" >&2; exit 1 ;;
+            esac
+            rm -f "$rendered"
+          done < <(
+            "$chezmoi" --source="$GITHUB_WORKSPACE" --destination="$CHEZMOI_DESTINATION" \
               managed --include=scripts --path-style=absolute
           )
 
