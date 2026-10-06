@@ -11,7 +11,10 @@ Include config.d/*.conf
 #   NVIDIA RTX 4070 Ti SUPER 16 GiB, 2 TB NVMe root + 1 TB NVMe second disk.
 #   Docker has the NVIDIA runtime; the user is in the docker group.
 #
-# Three paths to it, in order of preference:
+# `desk` is the name to use. Its ProxyCommand (~/.local/bin/desk-route) picks
+# the cable when the dock is attached and the tailnet otherwise, so one name
+# works whether the laptop is docked, on Wi-Fi, or away. The explicit paths
+# remain for debugging:
 #
 #   desk-dock   192.168.77.2   Cable from the Thunderbolt dock. Static on both
 #                              ends: Mac en8 (service "Thunderbolt Ethernet
@@ -21,7 +24,7 @@ Include config.d/*.conf
 #                              Not 10.x: the tailnet's AWS subnet router
 #                              advertises 10.0.0.0/16, and the box accepts
 #                              tailnet routes, which would swallow the link.
-#   desk        MagicDNS       Tailscale; works from anywhere the tailnet does.
+#   desk-ts     100.96.255.112 Tailscale only; works from anywhere the tailnet does.
 #   desk-wifi   192.168.60.5   Same Wi-Fi LAN; DHCP lease, may change.
 #
 # Key: ~/.ssh/id_ed25519, installed on desk with ssh-copy-id on 2026-10-06.
@@ -34,17 +37,21 @@ Host desk-dock
 
 Host desk
     HostName desk
+    ProxyCommand ~/.local/bin/desk-route %p
+
+Host desk-ts
+    HostName 100.96.255.112
 
 Host desk-wifi
     HostName 192.168.60.5
 
-Host desk desk-dock desk-wifi
+Host desk desk-dock desk-ts desk-wifi
     User bthorne
     IdentityFile ~/.ssh/id_ed25519
     # Reuse one connection for bursts of commands (agents, scp, rsync).
     ControlMaster auto
     ControlPath ~/.ssh/cm-%r@%h:%p
-    ControlPersist 10m
+    ControlPersist 4h
     ServerAliveInterval 30
 {{- end }}
 

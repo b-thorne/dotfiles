@@ -5,9 +5,13 @@ long, or many-node jobs. Use the personal Linux box `desk` for interactive
 GPU work, local Docker runs of the Atomic tool images, and work that must not
 wait in the cluster queue.
 
-- Reach `desk` with `ssh desk-dock` (cable from the Thunderbolt dock,
-  192.168.77.2), `ssh desk` (Tailscale), or `ssh desk-wifi` (same LAN). The ssh
-  config that chezmoi manages documents each path.
+- Reach `desk` with `ssh desk`. That host picks the dock cable when it is
+  attached and the tailnet otherwise, so it works docked, on Wi-Fi, or away.
+  `desk-dock`, `desk-ts`, and `desk-wifi` force one path for debugging.
+- From the Mac, desk's home directory is mounted at `~/desk` over sshfs when
+  desk is reachable. `~/desk/work/atomic/<repo>` on the Mac is
+  `/home/bthorne/work/atomic/<repo>` on desk. Edit through the mount or on
+  desk; run heavy commands on desk with `ssh desk 'cd work/atomic/<repo> && …'`.
 - `desk` runs Pop!_OS 22.04 on an Intel i7-14700K (20 cores, 28 threads) with
   62 GiB RAM, an NVIDIA RTX 4070 Ti SUPER (16 GiB, driver 580, CUDA 13.0), a
   2 TB NVMe root disk, and a 1 TB second NVMe disk.

@@ -171,7 +171,7 @@ jobs:
           bash -n "$CHEZMOI_DESTINATION/.claude/statusline-starship.sh"
 
           # macOS-only targets must not render on Linux.
-          for absent in Brewfile Library .config/iterm2 .local/bin/ensure-nomad-mount; do
+          for absent in Brewfile Library .config/iterm2 .local/bin/ensure-nomad-mount .local/bin/desk-mount; do
             if [ -e "$CHEZMOI_DESTINATION/$absent" ]; then
               echo "macOS-only target rendered on Linux: $absent" >&2
               exit 1

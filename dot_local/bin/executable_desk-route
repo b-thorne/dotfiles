@@ -1,0 +1,15 @@
+#!/bin/sh
+# ssh ProxyCommand for the host "desk": pick the best path, open a TCP pipe.
+#   1. the cable from the Thunderbolt dock (192.168.77.2), sub-millisecond
+#   2. the tailnet address, which Tailscale routes over Wi-Fi LAN or DERP
+# ssh keeps the choice for the life of the ControlMaster connection; when the
+# cable goes away that master dies and the next ssh picks again.
+# Usage in ssh config:  ProxyCommand desk-route %p
+# Set DESK_ROUTE=tailscale to skip the cable (for testing the fallback).
+port="${1:-22}"
+cable=192.168.77.2
+tailnet=100.96.255.112
+if [ "${DESK_ROUTE:-}" != tailscale ] && nc -z -w 1 "$cable" "$port" 2>/dev/null; then
+  exec nc "$cable" "$port"
+fi
+exec nc "$tailnet" "$port"

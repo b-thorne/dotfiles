@@ -1,0 +1,32 @@
+#!/bin/zsh
+# Keep desk's home directory mounted at ~/desk over sshfs (FUSE-T), through
+# the "desk" ssh host so it follows the best path (cable, then tailnet).
+# launchd runs this every minute; it is quiet and idempotent.
+#   ~/desk/<path>  ==  /home/bthorne/<path> on desk
+# Requires: brew install --cask fuse-t fuse-t-sshfs (both in the Brewfile).
+set -u
+mount_point="$HOME/desk"
+log_file="$HOME/Library/Logs/desk-mount.log"
+log() { printf '%s %s\n' "$(date '+%Y-%m-%d %H:%M:%S')" "$*" >> "$log_file" }
+
+command -v sshfs >/dev/null 2>&1 || exit 0          # FUSE-T not installed yet
+mkdir -p "$mount_point"
+
+if mount | grep -Fq " on ${mount_point} "; then
+  # Mounted, but is it alive? A dead sshfs hangs every caller, so probe with a timeout.
+  if timeout 5 ls "$mount_point" >/dev/null 2>&1; then exit 0; fi
+  log "stale mount, unmounting"
+  umount -f "$mount_point" 2>/dev/null || diskutil unmount force "$mount_point" >/dev/null 2>&1
+fi
+
+# Reachable at all? Try the cable, then the tailnet, each briefly.
+ssh -o BatchMode=yes -o ConnectTimeout=4 desk true 2>/dev/null || exit 0
+
+if sshfs desk:/home/bthorne "$mount_point" \
+     -o reconnect,ServerAliveInterval=15,ServerAliveCountMax=3 \
+     -o follow_symlinks,volname=desk,noappledouble 2>>"$log_file"; then
+  log "mounted desk:/home/bthorne at $mount_point"
+else
+  log "mount failed"
+  exit 1
+fi

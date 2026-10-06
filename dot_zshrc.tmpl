@@ -123,14 +123,11 @@ nrun() { nomad job plan "$1"; printf 'run %s? [y/N] ' "$1"; read -r r; [[ "$r" =
 # ----- desk: persistent sessions on the Linux box -----
 # `desk [name]` attaches to (or creates) the tmux session <name> on desk, so an
 # agent started there keeps running when the laptop sleeps or disconnects.
-# Prefers the cable (desk-dock) and falls back to Tailscale (desk).
-desk() {
-  local session="${1:-main}" host=desk-dock
-  ssh -o ConnectTimeout=3 -q desk-dock true 2>/dev/null || host=desk
-  ssh -t "$host" "tmux new-session -A -s '$session'"
-}
-# List the tmux sessions that are open on desk.
-alias desk-ls='ssh desk-dock tmux ls 2>/dev/null || ssh desk tmux ls'
+# The ssh host "desk" picks the cable or the tailnet by itself (desk-route).
+desk() { ssh -t desk "tmux new-session -A -s '${1:-main}'" }
+alias desk-ls='ssh desk tmux ls'
+# Files on desk are mirrored at ~/desk over sshfs (see desk-mount):
+#   ~/desk/work/atomic/<repo>  ==  /home/bthorne/work/atomic/<repo> on desk
 
 # ----- Project tools (always via uv, per repo convention) -----
 alias nucleus='uv run nucleus'

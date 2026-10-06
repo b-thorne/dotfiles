@@ -7,6 +7,8 @@ Library
 .config/iterm2
 .local/bin/ensure-nomad-mount
 .local/bin/nomad-storage-status
+.local/bin/desk-route
+.local/bin/desk-mount
 install-homebrew.sh
 install-packages-darwin.sh
 configure-iterm2.sh
