@@ -1,0 +1,27 @@
+#!/usr/bin/env python3
+# chezmoi modify script for ~/.pi/agent/settings.json.
+# pi rewrites this file (lastChangelogVersion and friends), so we overlay only
+# the keys we own and keep whatever pi added.
+import json
+import sys
+
+raw = sys.stdin.read().strip()
+current = json.loads(raw) if raw else {}
+current.update({
+    "theme": "starship",
+    "defaultProvider": "openai-codex",
+    "defaultModel": "gpt-5.6-sol",
+    "defaultThinkingLevel": "xhigh",
+    "defaultProjectTrust": "always",
+    "showHardwareCursor": True,
+    "packages": [
+        "npm:pi-web-access",
+        "npm:pi-subagents",
+        "npm:@tintinweb/pi-subagents",
+        "npm:@juicesharp/rpiv-ask-user-question",
+        "npm:@ff-labs/pi-fff",
+    ],
+    "editorPaddingX": 1,
+})
+json.dump(current, sys.stdout, indent=2)
+sys.stdout.write("\n")

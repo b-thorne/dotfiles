@@ -79,6 +79,8 @@ jobs:
           fi
           grep -F "$CHEZMOI_DESTINATION/.config/iterm2" \
             "$CHEZMOI_DESTINATION/.config/iterm2/com.googlecode.iterm2.plist" >/dev/null
+          test ! -e "$CHEZMOI_DESTINATION/.codex/config.toml"
+          bash -n "$CHEZMOI_DESTINATION/.claude/statusline-starship.sh"
 
           while IFS= read -r -d '' file; do
             python3 -m json.tool "$file" >/dev/null
@@ -161,6 +163,12 @@ jobs:
           python3 -c 'import pathlib, sys, tomllib; tomllib.loads(pathlib.Path(sys.argv[1]).read_text())' \
             "$CHEZMOI_DESTINATION/.config/starship.toml"
           grep -F 'default = "box"' "$CHEZMOI_DESTINATION/.config/starship.toml" >/dev/null
+          python3 -c 'import pathlib, sys, tomllib; tomllib.loads(pathlib.Path(sys.argv[1]).read_text())' \
+            "$CHEZMOI_DESTINATION/.codex/config.toml"
+          # The settings merge scripts must produce valid JSON from an empty start.
+          python3 -m json.tool "$CHEZMOI_DESTINATION/.claude/settings.json" >/dev/null
+          python3 -m json.tool "$CHEZMOI_DESTINATION/.pi/agent/settings.json" >/dev/null
+          bash -n "$CHEZMOI_DESTINATION/.claude/statusline-starship.sh"
 
           # macOS-only targets must not render on Linux.
           for absent in Brewfile Library .config/iterm2 .local/bin/ensure-nomad-mount; do

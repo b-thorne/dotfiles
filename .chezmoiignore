@@ -15,6 +15,7 @@ install-ghdash.sh
 install-vscode-extensions.sh
 {{- end }}
 {{ if ne .chezmoi.os "linux" -}}
-# Linux only.
+# Linux only. On the Mac the ChatGPT app owns ~/.codex/config.toml.
 install-packages-linux.sh
+.codex/config.toml
 {{- end }}

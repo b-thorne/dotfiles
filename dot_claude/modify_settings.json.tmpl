@@ -1,0 +1,86 @@
+#!/usr/bin/env python3
+# chezmoi modify script for ~/.claude/settings.json.
+#
+# Claude Code and a-gents write keys into this file themselves (/config
+# toggles, the a-gents SessionStart hook). A plain managed file would fight
+# them, so this script reads the current file on stdin, overlays the keys we
+# own, and writes the result. Keys we do not list survive untouched.
+import json
+import sys
+
+home = "{{ .chezmoi.homeDir }}"
+darwin = {{ if eq .chezmoi.os "darwin" }}True{{ else }}False{{ end }}
+
+raw = sys.stdin.read().strip()
+current = json.loads(raw) if raw else {}
+
+
+def cmd(command, timeout=None):
+    hook = {"type": "command", "command": command}
+    if timeout is not None:
+        hook["timeout"] = timeout
+    return {"hooks": [hook]}
+
+
+hooks = {
+    # a-gents refreshes the Atomic skills at the start of every session.
+    "SessionStart": [cmd(f"{home}/.local/bin/a-gents hook sessionstart", timeout=10)],
+}
+if darwin:
+    # iTerm2 ships cc-status, which drives the tab badge from Claude Code events.
+    cc_status = cmd(f"{home}/.config/iterm2/cc-status")
+    for event in (
+        "Notification", "PermissionRequest", "PostToolUse", "PreToolUse",
+        "SessionEnd", "Stop", "StopFailure", "SubagentStop", "UserPromptSubmit",
+    ):
+        hooks[event] = [cc_status]
+    hooks["SessionStart"].append(cc_status)
+
+managed = {
+    "model": "fable",
+    "hooks": hooks,
+    "statusLine": {"type": "command", "command": "bash ~/.claude/statusline-starship.sh"},
+    "enabledPlugins": {"clangd-lsp@claude-plugins-official": True},
+    "tui": "fullscreen",
+    "theme": "dark",
+    "verbose": False,
+    "autoCompactEnabled": True,
+    "autoMode": {
+        "allow": ["$defaults", "Bash(nomad job status:*)", "Bash(nomad alloc logs:*)"],
+        "soft_deny": [
+            "$defaults",
+            "Bash(nomad job stop:*)",
+            "Bash(nomad alloc exec:*) when targeting non-dev/production-named allocations",
+        ],
+        "environment": [
+            "### Org-wide",
+            "**Organization**: Atomic Industries (github.com/Atomic-Industries; GSuite domain atomic.industries)",
+            "**Cloud provider(s)**: Google Cloud (Artifact Registry, `us-central1-docker.pkg.dev`); AWS (ECR `472440049675.dkr.ecr.us-east-1.amazonaws.com`)",
+            "**Repository visibility**: private (Atomic-Industries/atomic, confirmed via gh)",
+            "**Internal sharing / snippet hosting**: None configured — treat public paste/gist services as outside the trust boundary",
+            "**Secrets management**: None configured",
+            "**Default / protected branches**: Default branch `master`; ruleset `Require status checks` active; numerous named feature branches also listed as protected (e.g. `1268-fix-the-gradient-diminishing-in-dualregularizationsolver`, `1781-refactor-escape-plan-rl`, plus 80+ more) — treat rulesets as authoritative protection even where a branch isn't separately listed",
+            "**CI/CD deploy targets**: None configured",
+            "**Network posture**: None configured",
+            "**Source control**: Atomic-Industries/atomic (github.com) and its configured remote(s) only",
+            "**Trusted internal domains**: atmc.dev and subdomains (static.atmc.dev, cr.atmc.dev, cdn.atmc.dev, pypi.atmc.dev, cdn.service.consul) — seen repeatedly in this project's usage",
+            "**Trusted cloud buckets**: mlflow-artifacts-20230202211424654400000001 (config-derived — not a confirmed upload destination; uploads of local data still require confirmation)",
+            "**Key internal services**: Nomad cluster (job/alloc exec, `nomad alloc exec`, `nomad alloc fs`); Nucleus workflow system (`uv run nucleus dvc ...`); internal container registry cr.atmc.dev",
+            "**Internal package registry**: pypi.atmc.dev; cr.atmc.dev (container images); mirror-docker-io.atmc.dev",
+            "**Sensitive data locations & audiences**: `.env` (gitignored); CI secret `ANTHROPIC_API_KEY`; RBAC manifests under `kube_dev/deps/cluster-autoscaler/rbac.yaml`, `kube_dev/templates/mlflow/rbac.yaml`, `kube_dev/templates/paraview/rbac.yaml`; terraform module files under `terraform/modules/example/`",
+            "**Data retention / declassification**: None configured",
+            "**Sensitive remote targets**: any namespace, host, or container whose name carries `prod` or `production` as a whole word or name segment",
+            "**Protected deployment namespaces / environments**: None configured — fall back to the Sensitive remote targets heuristic",
+            "**Protected IaC scopes**: IAM, RBAC, networking, quota, and node-pool resources (including `kube_dev/**/rbac.yaml` and `terraform/modules/example/*`); anything whose name or tag carries `prod` or `production` as a whole word or name segment",
+            "### User-specific",
+            "**Primary use of Claude Code**: software development (scientific/simulation engineering — Genie symmetry project, Nomad/Nucleus run orchestration)",
+            f"**Trusted repo**: {home}/work/atomic/atomic (github.com/Atomic-Industries/atomic, private) and its origin remote",
+            "**Org-specific CLIs**: nomad, julia, uv, a-gents (routine under this repo's worktrees and `~/work/atomic/` prefix)",
+            "routine under ~/work/atomic/ prefix qualifiers for nomad alloc exec/logs/fs, julia test invocations, and uv run nucleus dvc commands",
+        ],
+    },
+}
+
+current.update(managed)
+json.dump(current, sys.stdout, indent=2, ensure_ascii=False)
+sys.stdout.write("\n")

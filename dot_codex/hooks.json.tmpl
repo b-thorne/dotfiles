@@ -1,0 +1,15 @@
+{
+  "hooks": {
+    "SessionStart": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "{{ .chezmoi.homeDir }}/.local/bin/a-gents hook sessionstart",
+            "timeout": 10
+          }
+        ]
+      }
+    ]
+  }
+}

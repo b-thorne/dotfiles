@@ -1,0 +1,22 @@
+{{- /* Rendered on Linux only (see .chezmoiignore). On the Mac the ChatGPT desktop app owns ~/.codex/config.toml. */ -}}
+# ~/.codex/config.toml — rendered by chezmoi from dot_codex/config.toml.tmpl.
+# Linux only: on the Mac the ChatGPT desktop app owns this file. These are the
+# portable parts of the Mac config: model, reasoning, memories, trusted repos.
+model = "gpt-6-astra"
+model_reasoning_effort = "xhigh"
+
+[features]
+memories = true
+
+[memories]
+generate_memories = true
+use_memories = true
+
+[projects."{{ .chezmoi.homeDir }}/work/atomic/atomic"]
+trust_level = "trusted"
+
+[projects."{{ .chezmoi.homeDir }}/work/atomic/insight"]
+trust_level = "trusted"
+
+[projects."{{ .chezmoi.homeDir }}/work/atomic/BlockOpt"]
+trust_level = "trusted"
