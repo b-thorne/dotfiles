@@ -68,8 +68,8 @@ if ! have uv "$uv_version"; then
   install -m 755 "$tmp/uv-x86_64-unknown-linux-gnu/uvx" "$bin/uvx"
 fi
 
-# Distro packages: the shell itself and its two plugins.
-apt_packages=(zsh zsh-autosuggestions zsh-syntax-highlighting)
+# Distro packages: the shell, its two plugins, and tree.
+apt_packages=(zsh zsh-autosuggestions zsh-syntax-highlighting tree)
 missing=()
 for package in "${apt_packages[@]}"; do
   dpkg -s "$package" >/dev/null 2>&1 || missing+=("$package")
