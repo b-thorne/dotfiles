@@ -1,0 +1,30 @@
+# Remote hosts: install xterm-ghostty terminfo, fall back to xterm-256color
+shell-integration-features = ssh-terminfo,ssh-env
+
+# Theme follows macOS light/dark mode
+theme = light:Catppuccin Latte,dark:Catppuccin Mocha
+
+font-family = JetBrains Mono
+font-size = 13
+
+# Left Option is Alt (readline, tmux, vim); right Option types special characters
+macos-option-as-alt = left
+
+# Quick terminal from any app (needs Accessibility permission)
+keybind = global:cmd+grave_accent=toggle_quick_terminal
+quick-terminal-position = top
+
+# Restore windows, tabs, and splits after a restart
+window-save-state = always
+
+copy-on-select = clipboard
+mouse-hide-while-typing = true
+unfocused-split-opacity = 0.85
+macos-titlebar-style = tabs
+
+# Scrollback in bytes (default is about 10 MB)
+scrollback-limit = 50000000
+
+# Notify when a long command finishes in an unfocused surface
+notify-on-command-finish = unfocused
+notify-on-command-finish-after = 30s
