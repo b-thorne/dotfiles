@@ -1,10 +1,12 @@
 {{- /* Targets that exist on one platform only. Patterns match target paths; a script matches its name without the run_/once_/onchange_/before_/after_ prefixes. */ -}}
 README.md
 {{ if ne .chezmoi.os "darwin" -}}
-# macOS only: Homebrew, iTerm2, Übersicht widgets, launchd, and the scripts that drive them.
+# macOS only: Homebrew, iTerm2, mpd, Übersicht widgets, launchd, and the scripts that drive them.
 Brewfile
 Library
 .config/iterm2
+.config/mpd
+.mpdconf
 .local/bin/ensure-nomad-mount
 .local/bin/nomad-storage-status
 .local/bin/desk-route

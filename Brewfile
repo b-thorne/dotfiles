@@ -47,6 +47,7 @@ brew "mpc"
 brew "mpd", restart_service: :changed
 brew "musikcube"
 brew "ncmpcpp"
+brew "rmpc"
 brew "newsboat"
 brew "fastfetch"
 brew "neovim"
